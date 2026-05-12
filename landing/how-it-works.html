@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How it Works | Preparation Journey</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --accent: #0D9488;
+            --bg: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --violet-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; color: var(--text); background-color: var(--bg); line-height: 1.6; }
+        h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1250px; margin: 0 auto; padding: 0 24px; }
+
+        /* Navigation */
+        nav { padding: 14px 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+        .nav-items { display: flex; gap: 32px; align-items: center; }
+        .nav-link { font-weight: 600; color: var(--text-muted); font-size: 15px; transition: var(--transition); }
+        .nav-link.active, .nav-link:hover { color: var(--primary); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: var(--transition); }
+        .btn-primary { background: var(--violet-gradient); color: white; }
+        .btn-secondary { background: rgba(79, 70, 229, 0.05); color: var(--primary); border: 2px solid rgba(79, 70, 229, 0.15); }
+
+        /* Page Header */
+        .page-header { padding: 100px 0 60px; text-align: center; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+        .section-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 800; display: inline-block; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Methodology Base */
+        .how { padding: 80px 0; background: white; }
+        .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 40px; }
+        .step-card { padding: 48px 32px; border-radius: 28px; background: white; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: var(--transition); }
+        .step-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.08); border-color: rgba(79, 70, 229, 0.15); }
+        .step-num { width: 54px; height: 54px; background: rgba(79, 70, 229, 0.08); color: var(--primary); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 24px; transition: var(--transition); }
+        .step-card:hover .step-num { background: var(--violet-gradient); color: white; }
+        .step-card h4 { font-size: 22px; margin-bottom: 12px; }
+        .step-card p { color: var(--text-muted); font-size: 15px; }
+
+        /* Phases Path Section */
+        .phases-section { padding: 100px 0; background: #0F172A; color: white; relative; }
+        .phase-row { display: grid; grid-template-columns: 1fr 2.5fr; gap: 48px; padding: 48px 0; border-bottom: 1px solid rgba(255,255,255,0.08); align-items: center; }
+        .phase-row:last-child { border-bottom: none; }
+        .phase-badge { background: rgba(255,255,255,0.05); color: var(--primary-light); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 800; display: inline-block; margin-bottom: 12px; }
+        .phase-row h3 { font-size: 28px; color: white; }
+        .phase-desc { color: #94A3B8; font-size: 16px; }
+
+        footer { padding: 80px 0 40px; background: #0F172A; color: white; border-top: 1px solid #1E293B; }
+        .footer-logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #94A3B8; font-size: 15px; transition: var(--transition); }
+        .footer-links a:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="./index.html" class="logo">
+                <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 38px; width: auto;">
+                <span style="background: var(--violet-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Brainiyo</span>
+            </a>
+            <div class="nav-items">
+                <a href="./features.html" class="nav-link">Features</a>
+                <a href="./why-us.html" class="nav-link">Why Us</a>
+                <a href="./how-it-works.html" class="nav-link active">How it Works</a>
+                <a href="./pricing.html" class="nav-link">Pricing</a>
+                <a href="./faqs.html" class="nav-link">FAQs</a>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <a href="http://localhost:8080/" class="btn btn-secondary">Practice Portal</a>
+                <a href="http://localhost:5173/" target="_blank" class="btn btn-primary">Admin Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container" style="max-width: 850px;">
+            <div class="section-tag">Methodology</div>
+            <h1 style="font-size: 48px; margin-bottom: 16px;">Three steps to absolute mastery</h1>
+            <p style="color: var(--text-muted); font-size: 18px;">Our platform logic implements proven cognitive retrieval loops to guarantee extreme long-term memory fidelity.</p>
+        </div>
+    </header>
+
+    <section class="how">
+        <div class="container">
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h4>Target a Module</h4>
+                    <p>Select any precise chapter or conceptual topic from the standardized Class 11 &amp; 12 syllabus arrays across Physics, Chemistry, and Biology arrays.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h4>Adaptive Execution</h4>
+                    <p>Engage with questions calibrated dynamically in real-time. Smoothly build foundational logic base before challenging extreme complexity layers.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h4>Spaced Optimization</h4>
+                    <p>Our scheduling algorithms feed you previous failure points exactly when your retention curve maps down to drop limits. Secure permanent recall.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="phases-section">
+        <div class="container">
+            <div style="text-align: center; max-width: 700px; margin: 0 auto 60px;">
+                <div class="section-tag" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#818CF8;">Execution Lifecycles</div>
+                <h2 style="font-size: 38px;">Structured Phase-by-Phase Timeline</h2>
+                <p style="color: #94A3B8; font-size: 16px; margin-top: 8px;">How our platform carries aspirants from initial base introduction to peak testing success readiness.</p>
+            </div>
+
+            <div>
+                <div class="phase-row">
+                    <div>
+                        <div class="phase-badge">TRACK PHASE 01</div>
+                        <h3>Foundation Baseline</h3>
+                    </div>
+                    <div class="phase-desc">
+                        During the initial 2 weeks, aspirants execute across standard syllabus reference queues. The system analyzes baseline processing speed parameters, mapping core weaknesses across primary math and science frameworks without introducing overwhelming stress limits.
+                    </div>
+                </div>
+
+                <div class="phase-row">
+                    <div>
+                        <div class="phase-badge" style="color:#2DD4BF;">TRACK PHASE 02</div>
+                        <h3>Precision Reinforcement</h3>
+                    </div>
+                    <div class="phase-desc">
+                        Months 2 through 6 activate full predictive logic models. The backend evaluates exact topic success vectors, resurfacing flashcard iterations of missed concepts while actively accelerating standard complexity nodes to maximize deep logic building.
+                    </div>
+                </div>
+
+                <div class="phase-row">
+                    <div>
+                        <div class="phase-badge" style="color:#F43F5E;">TRACK PHASE 03</div>
+                        <h3>Simulated Readiness</h3>
+                    </div>
+                    <div class="phase-desc">
+                        The final sprint shifts priorities purely toward test day conditioning. Aspirants execute full-length diagnostic exams inside 100% compliant simulated NTA application frames to calibrate strict time distribution metrics under authentic psychological parameters.
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top: 80px;">
+                <a href="http://localhost:8080/" class="btn btn-primary" style="padding: 16px 36px; font-size: 16px; background: white; color: #0F172A;">Initiate Target Preparation Run</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 48px; margin-bottom: 60px;">
+                <div style="max-width: 320px;">
+                    <div class="footer-logo">
+                        <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 42px;">
+                        <span>Brainiyo</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 15px;">The supreme engineering platform built to deliver top percent outcome scaling for standard test configurations.</p>
+                </div>
+                <div style="display: flex; gap: 80px; flex-wrap: wrap;">
+                    <div>
+                        <h5 style="margin-bottom: 24px; font-weight: 700; color:white;">Navigation</h5>
+                        <ul class="footer-links">
+                            <li><a href="./index.html">Home Landing</a></li>
+                            <li><a href="./features.html">Features System</a></li>
+                            <li><a href="./why-us.html">Why Us</a></li>
+                            <li><a href="./how-it-works.html">How it Works</a></li>
+                            <li><a href="./pricing.html">Plan Modules</a></li>
+                            <li><a href="./faqs.html">FAQ Specs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; text-align: center; color: #64748B; font-size: 13px;">
+                &copy; 2026 Brainiyo EdTech Technologies. Standard Global Access Rights Enforced.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

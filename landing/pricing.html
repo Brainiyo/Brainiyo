@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans &amp; Full Access Features | Brainiyo</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --accent: #0D9488;
+            --bg: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --violet-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; color: var(--text); background-color: var(--bg); line-height: 1.6; }
+        h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1250px; margin: 0 auto; padding: 0 24px; }
+
+        /* Navigation */
+        nav { padding: 14px 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+        .nav-items { display: flex; gap: 32px; align-items: center; }
+        .nav-link { font-weight: 600; color: var(--text-muted); font-size: 15px; transition: var(--transition); }
+        .nav-link.active, .nav-link:hover { color: var(--primary); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: var(--transition); }
+        .btn-primary { background: var(--violet-gradient); color: white; }
+        .btn-secondary { background: rgba(79, 70, 229, 0.05); color: var(--primary); border: 2px solid rgba(79, 70, 229, 0.15); }
+
+        /* Page Layout */
+        .page-header { padding: 100px 0 60px; text-align: center; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+        .section-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 800; display: inline-block; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .pricing { padding: 80px 0; background: white; text-align: center; }
+        .price-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 950px; margin: 40px auto 0; gap: 40px; }
+        .price-card { padding: 56px 48px; border-radius: 36px; background: white; border: 1px solid #E2E8F0; text-align: left; transition: var(--transition); display: flex; flex-direction: column; justify-content: space-between; }
+        .price-card.pro { border: 2.5px solid var(--primary); position: relative; box-shadow: 0 35px 60px -15px rgba(79, 70, 229, 0.15); }
+        .popular { position: absolute; top: 24px; right: 24px; background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 800; }
+        .price-card h3 { font-size: 26px; margin-bottom: 8px; }
+        .price { font-size: 54px; font-weight: 800; margin: 24px 0 32px; color: #0F172A; }
+        .price span { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+        .price-list li { margin-bottom: 16px; display: flex; align-items: center; gap: 14px; font-size: 15px; font-weight: 500; color: var(--text-muted); }
+        .price-list li::before { content: "✓"; width: 20px; height: 20px; background: rgba(13, 148, 136, 0.1); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+
+        /* Full Access Breakdown Table */
+        .breakdown { padding: 60px 0 120px; background: #F8FAFC; text-align: left; }
+        .breakdown-table { width: 100%; border-collapse: collapse; background: white; border-radius: 24px; overflow: hidden; border: 1px solid #E2E8F0; }
+        .breakdown-table th, .breakdown-table td { padding: 20px 24px; border-bottom: 1px solid #E2E8F0; font-size: 15px; }
+        .breakdown-table th { background: #0F172A; color: white; font-weight: 700; }
+        .breakdown-table td:first-child { font-weight: 600; color: #1E293B; width: 40%; }
+        .breakdown-table th:nth-child(2), .breakdown-table td:nth-child(2) { text-align: center; width: 30%; background: #F8FAFC; border-right: 1px solid #E2E8F0; }
+        .breakdown-table th:nth-child(3), .breakdown-table td:nth-child(3) { text-align: center; width: 30%; }
+        .breakdown-table td .check { color: #10B981; font-weight: 800; font-size: 18px; }
+        .breakdown-table td .dash { color: #94A3B8; font-weight: 800; }
+
+        footer { padding: 80px 0 40px; background: #0F172A; color: white; border-top: 1px solid #1E293B; }
+        .footer-logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #94A3B8; font-size: 15px; transition: var(--transition); }
+        .footer-links a:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="./index.html" class="logo">
+                <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 38px; width: auto;">
+                <span style="background: var(--violet-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Brainiyo</span>
+            </a>
+            <div class="nav-items">
+                <a href="./features.html" class="nav-link">Features</a>
+                <a href="./why-us.html" class="nav-link">Why Us</a>
+                <a href="./how-it-works.html" class="nav-link">How it Works</a>
+                <a href="./pricing.html" class="nav-link active">Pricing</a>
+                <a href="./faqs.html" class="nav-link">FAQs</a>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <a href="http://localhost:8080/" class="btn btn-secondary">Practice Portal</a>
+                <a href="http://localhost:5173/" target="_blank" class="btn btn-primary">Admin Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container" style="max-width: 800px;">
+            <div class="section-tag">Unbeatable Value</div>
+            <h1 style="font-size: 48px; margin-bottom: 16px;">Zero barriers to maximum preparation</h1>
+            <p style="color: var(--text-muted); font-size: 18px;">Start scaling right now. Unlock advanced execution parameters without legacy fee overheads.</p>
+        </div>
+    </header>
+
+    <section class="pricing">
+        <div class="container">
+            <div class="price-grid">
+                <div class="price-card">
+                    <div>
+                        <h3>Essential Tier</h3>
+                        <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Perfect for kickstarting standard active practice loops</p>
+                        <div class="price">₹0 <span>/ forever</span></div>
+                        <ul class="price-list">
+                            <li>30 Premium Adaptive Prompts / Day</li>
+                            <li>Standard Sub-topic Navigation Arrays</li>
+                            <li>Core Dashboard Diagnostics Matrix</li>
+                            <li>Verified NCERT Base Reference Pool</li>
+                        </ul>
+                    </div>
+                    <a href="http://localhost:8080/" class="btn btn-secondary" style="width: 100%; margin-top: 40px; text-align: center; display: block; padding: 16px;">Launch Free Base</a>
+                </div>
+                
+                <div class="price-card pro">
+                    <div class="popular">MOST SELECTED</div>
+                    <div>
+                        <h3>Mastery Ultimate</h3>
+                        <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Complete access to high tier ML scheduling engines</p>
+                        <div class="price">₹299 <span>/ month</span></div>
+                        <ul class="price-list">
+                            <li>Infinite Adaptive Execution Limits</li>
+                            <li>Full Spaced Repetition Queue System</li>
+                            <li>Deep Heatmap Weakness Detection</li>
+                            <li>Comprehensive Verified Past Year Sets</li>
+                            <li>Premium Dedicated Priority Processing</li>
+                        </ul>
+                    </div>
+                    <a href="http://localhost:8080/" class="btn btn-primary" style="width: 100%; margin-top: 40px; text-align: center; display: block; padding: 16px;">Unlock Full Power</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="breakdown">
+        <div class="container">
+            <div style="text-align: center; max-width: 700px; margin: 0 auto 40px;">
+                <h2 style="font-size: 32px; margin-bottom: 10px;">Detailed Feature Authorization Mapping</h2>
+                <p style="color: var(--text-muted); font-size: 15px;">Complete side-by-side visibility evaluating limit allocations across platform systems.</p>
+            </div>
+
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Platform Capability Node</th>
+                        <th>Essential Base</th>
+                        <th>Mastery Ultimate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Daily Question Processing Limits</td>
+                        <td>30 Requests</td>
+                        <td><span style="font-weight:700; color:var(--primary);">Unlimited Requests</span></td>
+                    </tr>
+                    <tr>
+                        <td>Core Class 11 &amp; 12 Topic Base</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dynamic Spaced Repetition Queuing</td>
+                        <td><span class="dash">—</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Micro-topic Vulnerability Heatmaps</td>
+                        <td>Basic Overview</td>
+                        <td><span class="check">✓ Full Granular Matrix</span></td>
+                    </tr>
+                    <tr>
+                        <td>NTA Fidelity Web Simulation</td>
+                        <td><span class="dash">—</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Past Year Verified Reference Sets</td>
+                        <td><span class="dash">—</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Live Cloud Telemetry Sync</td>
+                        <td><span class="dash">—</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Support Ticket Latency SLA</td>
+                        <td>Standard Pool</td>
+                        <td><span style="font-weight:700; color:var(--primary);">High Tier Priority (&lt; 2hr)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 48px; margin-bottom: 60px;">
+                <div style="max-width: 320px;">
+                    <div class="footer-logo">
+                        <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 42px;">
+                        <span>Brainiyo</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 15px;">The supreme engineering platform built to deliver top percent outcome scaling for standard test configurations.</p>
+                </div>
+                <div style="display: flex; gap: 80px; flex-wrap: wrap;">
+                    <div>
+                        <h5 style="margin-bottom: 24px; font-weight: 700; color:white;">Navigation</h5>
+                        <ul class="footer-links">
+                            <li><a href="./index.html">Home Landing</a></li>
+                            <li><a href="./features.html">Features System</a></li>
+                            <li><a href="./why-us.html">Why Us</a></li>
+                            <li><a href="./how-it-works.html">How it Works</a></li>
+                            <li><a href="./pricing.html">Plan Modules</a></li>
+                            <li><a href="./faqs.html">FAQ Specs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; text-align: center; color: #64748B; font-size: 13px;">
+                &copy; 2026 Brainiyo EdTech Technologies. Standard Global Access Rights Enforced.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

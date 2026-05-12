@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features Deep Dive | Brainiyo EdTech Platform</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --accent: #0D9488;
+            --bg: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --violet-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --ocean-gradient: linear-gradient(135deg, #0D9488 0%, #0284C7 100%);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; color: var(--text); background-color: var(--bg); line-height: 1.6; }
+        h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1250px; margin: 0 auto; padding: 0 24px; }
+
+        /* Navigation */
+        nav { padding: 14px 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+        .nav-items { display: flex; gap: 32px; align-items: center; }
+        .nav-link { font-weight: 600; color: var(--text-muted); font-size: 15px; transition: var(--transition); }
+        .nav-link.active, .nav-link:hover { color: var(--primary); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: var(--transition); }
+        .btn-primary { background: var(--violet-gradient); color: white; }
+        .btn-secondary { background: rgba(79, 70, 229, 0.05); color: var(--primary); border: 2px solid rgba(79, 70, 229, 0.15); }
+
+        /* Page Header */
+        .page-header { padding: 100px 0 60px; text-align: center; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+        .section-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 800; display: inline-block; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Features Expanded Grid */
+        .features { padding: 100px 0; background: #0B0F19; color: white; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 40px; }
+        .feat-card { padding: 40px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; transition: var(--transition); display: flex; flex-direction: column; justify-content: space-between; }
+        .feat-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .feat-icon { width: 64px; height: 64px; border-radius: 20px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .feat-card h4 { font-size: 22px; margin-bottom: 12px; color: white; }
+        .feat-card p { color: #94A3B8; font-size: 15px; }
+
+        /* Deep Dive Details Section */
+        .deep-dive { padding: 100px 0; background: white; }
+        .dive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-top: 40px; }
+        .dive-content li { margin-bottom: 20px; display: flex; gap: 16px; align-items: flex-start; }
+        .dive-content li span { background: rgba(79,70,229,0.1); color: var(--primary); padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 14px; }
+        .data-preview { background: #0F172A; padding: 40px; border-radius: 32px; color: white; border: 8px solid #1E293B; box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+
+        footer { padding: 80px 0 40px; background: #0F172A; color: white; border-top: 1px solid #1E293B; }
+        .footer-logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #94A3B8; font-size: 15px; transition: var(--transition); }
+        .footer-links a:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="./index.html" class="logo">
+                <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 38px; width: auto;">
+                <span style="background: var(--violet-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Brainiyo</span>
+            </a>
+            <div class="nav-items">
+                <a href="./features.html" class="nav-link active">Features</a>
+                <a href="./why-us.html" class="nav-link">Why Us</a>
+                <a href="./how-it-works.html" class="nav-link">How it Works</a>
+                <a href="./pricing.html" class="nav-link">Pricing</a>
+                <a href="./faqs.html" class="nav-link">FAQs</a>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <a href="http://localhost:8080/" class="btn btn-secondary">Practice Portal</a>
+                <a href="http://localhost:5173/" target="_blank" class="btn btn-primary">Admin Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container" style="max-width: 850px;">
+            <div class="section-tag">System Capabilities</div>
+            <h1 style="font-size: 48px; margin-bottom: 16px;">Engineered strictly for ultimate test outcomes</h1>
+            <p style="color: var(--text-muted); font-size: 18px;">Discover the advanced machine learning architecture, cognitive logic triggers, and real-time behavioral diagnostics powering the platform.</p>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 36px;">Core Infrastructure Modules</h2>
+                <p style="color: #94A3B8; margin-top: 10px;">8 independent sub-systems built to maximize knowledge retention</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">⚡</div>
+                        <h4>Dynamic ML Calibrator</h4>
+                        <p>Difficulty nodes adjust dynamically based on multi-variable metrics: question execution speed, self-rated confidence blocks, and cumulative sub-topic accuracy baselines.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">🧠</div>
+                        <h4>Supercharged SRS Queue</h4>
+                        <p>Automated flashcard queues implement spaced intervals. Prompts automatically resurface right when your natural cognitive decay curve approaches critical dropoffs.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">📊</div>
+                        <h4>Granular Diagnostics</h4>
+                        <p>Evaluate precision subject heatmaps across Physics, Chemistry, and Biology arrays. Instantly identify vulnerable micro-topics before attempting global mock cycles.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">🎯</div>
+                        <h4>NTA Native Fidelity</h4>
+                        <p>Simulate perfect target exam constraints using web interfaces explicitly matching the native color grading, response palettes, and navigation states of live NTA testing portals.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">⏱️</div>
+                        <h4>Pacing &amp; Speed Optimization</h4>
+                        <p>Track secondary time matrices per question attempt. Our logic evaluates time traps where students over-index minutes on low-weight conceptual loops.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">🎯</div>
+                        <h4>Custom Weakness Focus</h4>
+                        <p>Create bespoke custom execution sets purely filtering tagged historical mistakes, overlapping formula variations, or multi-step physical chemistry calculations.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">📱</div>
+                        <h4>State Sync Pipeline</h4>
+                        <p>Instantaneous low-latency state sharing between web browsers and standalone device applications ensures uninterrupted progress transfer anywhere.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div>
+                        <div class="feat-icon">🏆</div>
+                        <h4>Adaptive Streak Engine</h4>
+                        <p>Maintain consistent high-accuracy momentum using structured dynamic daily execution goals backed by relative rank indicators to benchmark progress against top peer groups.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="deep-dive">
+        <div class="container dive-grid">
+            <div class="dive-content">
+                <div class="section-tag">Performance Tracking</div>
+                <h2 style="font-size: 38px; margin-bottom: 24px;">Actionable real-time intelligence</h2>
+                <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 32px;">Every single interaction feeds into our telemetry engine to dynamically reconstruct your concept base map. Eliminate blindspots automatically.</p>
+                
+                <ul>
+                    <li>
+                        <span>01</span>
+                        <div>
+                            <strong style="color: var(--text); font-size: 16px; display:block;">Accuracy vs Speed Scatter plots</strong>
+                            <p style="color: var(--text-muted); font-size: 14px;">Understand whether speed variations induce careless reading traps on complex numerical options.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span>02</span>
+                        <div>
+                            <strong style="color: var(--text); font-size: 16px; display:block;">Spaced Repetition Decay Logs</strong>
+                            <p style="color: var(--text-muted); font-size: 14px;">Review exact expected memory loss horizons mapped per high weight reference chapter.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span>03</span>
+                        <div>
+                            <strong style="color: var(--text); font-size: 16px; display:block;">Instant Doubt Explanations</strong>
+                            <p style="color: var(--text-muted); font-size: 14px;">Deep conceptual summaries append to solution strings immediately post selection execution.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="data-preview">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;">
+                    <span style="font-weight: 800; font-size: 14px; tracking:uppercase; color:var(--primary-light);">TELEMETRY PREVIEW</span>
+                    <span style="background: rgba(13,148,136,0.2); color: #2DD4BF; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight:700;">LIVE UPDATE</span>
+                </div>
+                <div style="font-family: monospace; font-size: 13px; color: #94A3B8; line-height: 2;">
+                    <div><span style="color: #F43F5E;">[!]</span> Concept Drop Detected: <span style="color:white;">Optics Matrix</span></div>
+                    <div>&gt; Triggering Prompt Recovery Node...</div>
+                    <div style="margin: 12px 0; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                        <span style="color: #38BDF8;">Target:</span> Question ID #8841-A<br>
+                        <span style="color: #38BDF8;">Sub-topic:</span> Total Internal Reflection Multipliers<br>
+                        <span style="color: #A3E635;">Recalibrated Difficulty:</span> 0.82 (High Weight)
+                    </div>
+                    <div>&gt; Injecting prompt into active session stack...</div>
+                    <div style="color: #22C55E; font-weight: bold; margin-top: 10px;">✔ Session telemetry queue optimized successfully.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 48px; margin-bottom: 60px;">
+                <div style="max-width: 320px;">
+                    <div class="footer-logo">
+                        <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 42px;">
+                        <span>Brainiyo</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 15px;">The supreme engineering platform built to deliver top percent outcome scaling for standard test configurations.</p>
+                </div>
+                <div style="display: flex; gap: 80px; flex-wrap: wrap;">
+                    <div>
+                        <h5 style="margin-bottom: 24px; font-weight: 700; color:white;">Navigation</h5>
+                        <ul class="footer-links">
+                            <li><a href="./index.html">Home Landing</a></li>
+                            <li><a href="./features.html">Features System</a></li>
+                            <li><a href="./why-us.html">Why Us</a></li>
+                            <li><a href="./how-it-works.html">How it Works</a></li>
+                            <li><a href="./pricing.html">Plan Modules</a></li>
+                            <li><a href="./faqs.html">FAQ Specs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; text-align: center; color: #64748B; font-size: 13px;">
+                &copy; 2026 Brainiyo EdTech Technologies. Standard Global Access Rights Enforced.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

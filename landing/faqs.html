@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive FAQs | Brainiyo</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --accent: #0D9488;
+            --bg: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --violet-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; color: var(--text); background-color: var(--bg); line-height: 1.6; }
+        h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1250px; margin: 0 auto; padding: 0 24px; }
+
+        /* Navigation */
+        nav { padding: 14px 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+        .nav-items { display: flex; gap: 32px; align-items: center; }
+        .nav-link { font-weight: 600; color: var(--text-muted); font-size: 15px; transition: var(--transition); }
+        .nav-link.active, .nav-link:hover { color: var(--primary); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: var(--transition); }
+        .btn-primary { background: var(--violet-gradient); color: white; }
+        .btn-secondary { background: rgba(79, 70, 229, 0.05); color: var(--primary); border: 2px solid rgba(79, 70, 229, 0.15); }
+
+        /* Page Layout */
+        .page-header { padding: 100px 0 60px; text-align: center; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+        .section-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 16px; border-radius: 100px; font-size: 12px; font-weight: 800; display: inline-block; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .faq { padding: 80px 0; background: white; }
+        .faq-grid { max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .faq-category-title { font-size: 22px; color: var(--primary); margin: 32px 0 16px; border-bottom: 2px solid rgba(79,70,229,0.1); padding-bottom: 8px; }
+        .faq-item { border: 1px solid #E2E8F0; border-radius: 20px; overflow: hidden; transition: var(--transition); }
+        .faq-item summary { padding: 24px; font-size: 17px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #0F172A; }
+        .faq-item summary::after { content: "+"; font-size: 24px; color: var(--primary); font-weight: 400; }
+        .faq-item[open] summary::after { content: "−"; }
+        .faq-item[open] { border-color: var(--primary); background: rgba(79, 70, 229, 0.02); }
+        .faq-content { padding: 0 24px 24px; color: var(--text-muted); font-size: 15px; }
+
+        /* Support CTA */
+        .support-cta { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 48px; border-radius: 32px; text-align: center; max-width: 850px; margin: 60px auto 0; }
+
+        footer { padding: 80px 0 40px; background: #0F172A; color: white; border-top: 1px solid #1E293B; }
+        .footer-logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #94A3B8; font-size: 15px; transition: var(--transition); }
+        .footer-links a:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="./index.html" class="logo">
+                <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 38px; width: auto;">
+                <span style="background: var(--violet-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Brainiyo</span>
+            </a>
+            <div class="nav-items">
+                <a href="./features.html" class="nav-link">Features</a>
+                <a href="./why-us.html" class="nav-link">Why Us</a>
+                <a href="./how-it-works.html" class="nav-link">How it Works</a>
+                <a href="./pricing.html" class="nav-link">Pricing</a>
+                <a href="./faqs.html" class="nav-link active">FAQs</a>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <a href="http://localhost:8080/" class="btn btn-secondary">Practice Portal</a>
+                <a href="http://localhost:5173/" target="_blank" class="btn btn-primary">Admin Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container" style="max-width: 800px;">
+            <div class="section-tag">Got Questions?</div>
+            <h1 style="font-size: 48px; margin-bottom: 16px;">Frequently Asked Questions</h1>
+            <p style="color: var(--text-muted); font-size: 18px;">Find verified answers regarding platform compatibility, scheduling limits, telemetry layers, and technical frameworks.</p>
+        </div>
+    </header>
+
+    <section class="faq">
+        <div class="container">
+            <div class="faq-grid">
+                
+                <h3 class="faq-category-title">Core Architecture &amp; Methodology</h3>
+                <details class="faq-item" open>
+                    <summary>How does the adaptive system choose questions?</summary>
+                    <div class="faq-content">Our backend monitors your accuracy metrics continuously. If you pass initial concept baseline triggers, the scheduling layer seamlessly steps up difficulty multipliers so you never waste time on already mastered nodes.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I target specific sub-topics inside a chapter?</summary>
+                    <div class="faq-content">Absolutely. Brainiyo maps the entire standard framework down to ultra-precise micro-topics. You can focus practice runs purely on specific modules like 'Rotational Inertia' or 'Chemical Equilibrium'.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Are mock tests included directly?</summary>
+                    <div class="faq-content">Yes, standard full-length diagnostic exams mapping core target test variables are baked in directly on our Pro plans to train your real session management.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>How does Spaced Repetition track memory fade?</summary>
+                    <div class="faq-content">The algorithm tracks individual failure timestamps alongside correct answers speeds. When complex conceptual weightings drop below specific memory half-lives, the platform triggers resurfacing reminders to prevent complete logic decay.</div>
+                </details>
+
+                <h3 class="faq-category-title">Subscriptions &amp; Multi-Tier Limits</h3>
+                <details class="faq-item">
+                    <summary>What payment methods are supported?</summary>
+                    <div class="faq-content">We integrate secure multi-channel gateways supporting standard UPI interfaces, Credit/Debit networks, and major net banking arrays seamlessly.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I downgrade back to the Essential Tier anytime?</summary>
+                    <div class="faq-content">Yes, our monthly subscriptions enforce zero mandatory lock-ins. You can transition billing options freely directly from your settings console.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Is there an annual lock-in discount?</summary>
+                    <div class="faq-content">We deliberately prioritize accessible modular billing over multi-year upfront barriers, though special cohort batches occasionally feature seasonal pass parameters.</div>
+                </details>
+
+                <h3 class="faq-category-title">Technical Support &amp; Cross-Platform Sync</h3>
+                <details class="faq-item">
+                    <summary>Can I access the application on smartphones?</summary>
+                    <div class="faq-content">Yes! We provide complete highly optimized Web views alongside dedicated Mobile platforms via clean state synchronization pipelines.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Does offline execution cache local data?</summary>
+                    <div class="faq-content">Active connection paths guarantee continuous telemetry processing, though localized sessions hold transient offline cache limits to handle brief dropouts smoothly.</div>
+                </details>
+            </div>
+
+            <div class="support-cta">
+                <h4 style="font-size: 22px; color: #0F172A; margin-bottom: 8px;">Still require additional clarification?</h4>
+                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px;">Our specialized core academic and telemetry support networks resolve edge scenarios rapidly.</p>
+                <a href="mailto:support@brainiyo-edtech.internal" class="btn btn-secondary" style="padding: 12px 28px;">Initiate Direct Communication</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 48px; margin-bottom: 60px;">
+                <div style="max-width: 320px;">
+                    <div class="footer-logo">
+                        <img src="./logo-icon.png" alt="Brainiyo Icon" style="height: 42px;">
+                        <span>Brainiyo</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 15px;">The supreme engineering platform built to deliver top percent outcome scaling for standard test configurations.</p>
+                </div>
+                <div style="display: flex; gap: 80px; flex-wrap: wrap;">
+                    <div>
+                        <h5 style="margin-bottom: 24px; font-weight: 700; color:white;">Navigation</h5>
+                        <ul class="footer-links">
+                            <li><a href="./index.html">Home Landing</a></li>
+                            <li><a href="./features.html">Features System</a></li>
+                            <li><a href="./why-us.html">Why Us</a></li>
+                            <li><a href="./how-it-works.html">How it Works</a></li>
+                            <li><a href="./pricing.html">Plan Modules</a></li>
+                            <li><a href="./faqs.html">FAQ Specs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; text-align: center; color: #64748B; font-size: 13px;">
+                &copy; 2026 Brainiyo EdTech Technologies. Standard Global Access Rights Enforced.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
