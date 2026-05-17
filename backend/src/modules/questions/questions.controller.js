@@ -1,223 +1,303 @@
 const { query, getClient } = require('../../config/db');
-const redis                = require('../../config/redis');
-const { AppError }         = require('../../middleware/errorHandler');
-const { qualityScore, applySM2 } = require('../../utils/sm2');
-const { ADAPTIVE, PLANS, SM2 }   = require('../../config/constants');
-const { selectNextQuestion }      = require('../adaptive-engine/adaptive.service');
-const { recordDailyActivity }    = require('../retention/streak.service');
+const { AppError } = require('../../middleware/errorHandler');
+const { calculateSM2 } = require('../../utils/sm2');
+const { recordDailyActivity } = require('../retention/streak.service');
+const logger = require('../../utils/logger');
 
-// ─── Helpers ────────────────────────────────────────────────────────
+const questionsController = {
+  getNext: async (req, res, next) => {
+    try {
+      const { topicId, mode = 'practice' } = req.query;
+      const userId = req.user.id;
 
-const seenKey   = (userId, topicId) => `seen:${userId}:${topicId}`;
-const dailyKey  = (userId) =>
-  `daily_q:${userId}:${new Date().toISOString().slice(0, 10)}`;
+      let result;
+      if (mode === 'revision') {
+        // Get from spaced repetition queue
+        result = await query(
+          `SELECT q.* FROM spaced_repetition_queue sr
+           JOIN questions q ON q.id = sr.question_id
+           WHERE sr.user_id = $1 AND sr.next_review_at <= NOW()
+           ORDER BY sr.next_review_at ASC LIMIT 1`,
+          [userId]
+        );
+      } else {
+        // Get a question student hasn't done yet, or random
+        result = await query(
+          `SELECT q.* FROM questions q
+           LEFT JOIN student_attempts sa ON sa.question_id = q.id AND sa.user_id = $1
+           WHERE q.topic_id = $2 AND q.is_active = TRUE AND sa.id IS NULL
+           ORDER BY RANDOM() LIMIT 1`,
+          [userId, topicId]
+        );
 
-const targetDifficulty = (accuracy) => {
-  if (accuracy >= ADAPTIVE.HARD_THRESHOLD)   return 'hard';
-  if (accuracy >= ADAPTIVE.MEDIUM_THRESHOLD) return 'medium';
-  return 'easy';
-};
-
-const difficultyFallbacks = {
-  easy:   ['medium', 'hard'],
-  medium: ['easy', 'hard'],
-  hard:   ['medium', 'easy'],
-};
-
-/** Check / enforce daily question limit based on user's plan */
-const checkDailyLimit = async (userId) => {
-  const subRes = await query(
-    `SELECT plan FROM subscriptions
-     WHERE user_id = $1 AND is_active = TRUE ORDER BY created_at DESC LIMIT 1`,
-    [userId]
-  );
-  const plan  = subRes.rows[0]?.plan || 'free';
-  const limit = PLANS[plan].dailyQuestions;
-
-  const count = parseInt(await redis.get(dailyKey(userId)) || '0', 10);
-  return { plan, limit, count, exceeded: count >= limit };
-};
-
-/** Increment daily question counter with end-of-day expiry */
-const incrementDaily = async (userId) => {
-  const key = dailyKey(userId);
-  await redis.incr(key);
-  // Expire at midnight (seconds until next midnight)
-  const now = new Date();
-  const midnight = new Date(now);
-  midnight.setHours(24, 0, 0, 0);
-  await redis.expireat(key, Math.floor(midnight.getTime() / 1000));
-};
-
-// ─── Controllers ────────────────────────────────────────────────────
-
-/* ──────────────────────────────────────────────────────────────────
-   GET /api/questions/next?topicId=&mode=practice|revision
-
-   • practice  — adaptive difficulty, excludes recently seen questions
-   • revision  — serves from spaced_repetition_queue (next_review_at <= NOW)
-   ────────────────────────────────────────────────────────────────── */
-const getNext = async (req, res, next) => {
-  try {
-    const { topicId, mode = 'practice' } = req.query;
-    const userId = req.user.id;
-
-    // ── Daily limit gate ─────────────────────────────────────────
-    const { exceeded, count, limit, plan } = await checkDailyLimit(userId);
-    if (exceeded) {
-      return next(
-        new AppError(
-          `Daily limit of ${limit} questions reached on your ${plan} plan.` +
-          (plan === 'free' ? ' Upgrade to Pro for unlimited practice.' : ''),
-          429
-        )
-      );
-    }
-
-    let question;
-
-    if (mode === 'revision') {
-      question = await selectNextQuestion(userId, topicId, 'revision', { query });
-      if (!question) {
-        return res.json({
-          success: true,
-          question: null,
-          message: 'No revision cards due right now. Check back later!',
-        });
+        if (result.rows.length === 0) {
+          // If all done, just get a random one from this topic
+          result = await query(
+            `SELECT * FROM questions WHERE topic_id = $1 AND is_active = TRUE ORDER BY RANDOM() LIMIT 1`,
+            [topicId]
+          );
+        }
       }
-    } else {
-      if (!topicId) return next(new AppError('topicId is required in practice mode', 400));
+
+      if (result.rows.length === 0) {
+        return res.json({ success: true, question: null, message: 'No more questions available' });
+      }
+
+      res.json({ success: true, question: result.rows[0] });
+    } catch (err) { next(err); }
+  },
+
+  submitAttempt: async (req, res, next) => {
+    const client = await getClient();
+    try {
+      const userId = req.user.id;
+      const { questionId, selectedOption, timeTakenSeconds = 0 } = req.body;
+
+      await client.query('BEGIN');
+
+      // 1. Fetch question details to verify answer
+      const qRes = await client.query(
+        'SELECT correct_option, explanation_text FROM questions WHERE id = $1',
+        [questionId]
+      );
+      if (!qRes.rows.length) throw new AppError('Question not found', 404);
       
-      question = await selectNextQuestion(userId, topicId, 'practice', { query });
+      const { correct_option, explanation_text } = qRes.rows[0];
+      const isCorrect = selectedOption === correct_option;
+      const quality = isCorrect ? 5 : 0; // Simplified quality mapping
 
-      if (!question) {
-        return res.json({
-          success: true,
-          question: null,
-          message: 'You have practiced all available questions in this topic!',
-        });
+      // 2. Record Attempt (Trigger updates student_topic_stats)
+      await client.query(
+        `INSERT INTO student_attempts (user_id, question_id, selected_option, is_correct, time_taken_seconds)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [userId, questionId, selectedOption, isCorrect, timeTakenSeconds]
+      );
+
+      // 3. Update Spaced Repetition Queue
+      // Get existing SR state
+      const srRes = await client.query(
+        'SELECT repetitions, ease_factor, interval_days FROM spaced_repetition_queue WHERE user_id = $1 AND question_id = $2',
+        [userId, questionId]
+      );
+
+      const prev = srRes.rows[0] || { repetitions: 0, ease_factor: 2.5, interval_days: 0 };
+      const { repetitions, easeFactor, interval, nextReviewDate } = calculateSM2(
+        quality, 
+        prev.repetitions, 
+        parseFloat(prev.ease_factor), 
+        parseFloat(prev.interval_days)
+      );
+
+      await client.query(
+        `INSERT INTO spaced_repetition_queue (user_id, question_id, next_review_at, interval_days, ease_factor, repetitions)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (user_id, question_id) DO UPDATE SET
+            next_review_at = EXCLUDED.next_review_at,
+            interval_days  = EXCLUDED.interval_days,
+            ease_factor    = EXCLUDED.ease_factor,
+            repetitions    = EXCLUDED.repetitions`,
+        [userId, questionId, nextReviewDate, interval, easeFactor, repetitions]
+      );
+
+      await client.query('COMMIT');
+
+      // 4. Record Daily Activity (Async, don't block response)
+      recordDailyActivity(userId).catch(err => logger.error('Streak update failed', err));
+
+      res.json({ 
+        success: true, 
+        data: {
+          is_correct: isCorrect,
+          correct_option,
+          explanation: explanation_text,
+          next_review: nextReviewDate
+        }
+      });
+    } catch (err) { 
+      await client.query('ROLLBACK').catch(() => {});
+      next(err); 
+    } finally {
+      client.release();
+    }
+  },
+
+  getRevisionDue: async (req, res, next) => {
+    try {
+      const userId = req.user.id;
+      const { rows: dueCount } = await query(
+        `SELECT COUNT(*) FROM spaced_repetition_queue WHERE user_id = $1 AND next_review_at <= NOW()`,
+        [userId]
+      );
+
+      const { rows: questions } = await query(
+        `SELECT q.*, s.name as subject_name, c.name as chapter_name, t.name as topic_name
+         FROM spaced_repetition_queue sr
+         JOIN questions q ON q.id = sr.question_id
+         JOIN topics t ON t.id = q.topic_id
+         JOIN chapters c ON c.id = t.chapter_id
+         JOIN subjects s ON s.id = c.subject_id
+         WHERE sr.user_id = $1 AND sr.next_review_at <= NOW()
+         ORDER BY sr.next_review_at ASC
+         LIMIT 20`,
+        [userId]
+      );
+
+      res.json({
+        success: true,
+        count: parseInt(dueCount[0].count),
+        questions
+      });
+    } catch (err) { next(err); }
+  },
+
+  listQuestions: async (req, res, next) => {
+    try {
+      const { subjectId, chapterId, topicId, difficulty, search, page = 1, limit = 20 } = req.query;
+      const offset = (page - 1) * limit;
+
+      let whereClauses = ['q.is_active = TRUE'];
+      let params = [];
+
+      if (subjectId) {
+        params.push(subjectId);
+        whereClauses.push(`s.id = $${params.length}`);
       }
-    }
+      if (chapterId) {
+        params.push(chapterId);
+        whereClauses.push(`c.id = $${params.length}`);
+      }
+      if (topicId) {
+        params.push(topicId);
+        whereClauses.push(`q.topic_id = $${params.length}`);
+      }
+      if (difficulty) {
+        params.push(difficulty.toLowerCase());
+        whereClauses.push(`q.difficulty = $${params.length}`);
+      }
+      if (search) {
+        params.push(`%${search}%`);
+        whereClauses.push(`(q.body ILIKE $${params.length} OR q.explanation_text ILIKE $${params.length})`);
+      }
 
-    await incrementDaily(userId);
+      const where = whereClauses.length ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-    // NEVER send correct_option to the client before attempt
-    const { correct_option, explanation_text, ...safeQuestion } = question; // eslint-disable-line
-
-    res.json({
-      success: true,
-      question: safeQuestion,
-      meta: { mode, daily_used: count + 1, daily_limit: limit, plan },
-    });
-  } catch (err) { next(err); }
-};
-
-/* ──────────────────────────────────────────────────────────────────
-   POST /api/questions/attempt
-
-   Body: { questionId, selectedOption, timeTakenSeconds }
-
-   • Records student_attempts row
-   • Trigger auto-updates student_topic_stats
-   • Updates / inserts spaced_repetition_queue via SM-2
-   • Returns correct_option + explanation
-────────────────────────────────────────────────────────────────────*/
-const submitAttempt = async (req, res, next) => {
-  const client = await getClient();
-  try {
-    const { questionId, selectedOption, timeTakenSeconds } = req.body;
-    const userId = req.user.id;
-
-    // Fetch the question
-    const qRes = await client.query(
-      `SELECT id, topic_id, correct_option, explanation_text, difficulty
-       FROM questions WHERE id = $1 AND is_active = TRUE`,
-      [questionId]
-    );
-    if (!qRes.rows.length) throw new AppError('Question not found', 404);
-
-    const { correct_option, explanation_text, difficulty, topic_id } = qRes.rows[0];
-    const isCorrect = selectedOption != null && selectedOption === correct_option;
-
-    await client.query('BEGIN');
-
-    // 1. Insert attempt (DB trigger updates student_topic_stats automatically)
-    const attemptRes = await client.query(
-      `INSERT INTO student_attempts
-         (user_id, question_id, selected_option, is_correct, time_taken_seconds)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, attempted_at`,
-      [userId, questionId, selectedOption || null, isCorrect, timeTakenSeconds]
-    );
-
-    // 2. Update spaced repetition queue with SM-2
-    const srRes = await client.query(
-      `SELECT * FROM spaced_repetition_queue WHERE user_id = $1 AND question_id = $2`,
-      [userId, questionId]
-    );
-
-    let srUpdate = null;
-
-    if (srRes.rows.length) {
-      // Already in queue — apply SM-2 update
-      const card    = srRes.rows[0];
-      const quality = qualityScore(isCorrect, timeTakenSeconds);
-      const updated = applySM2(card, quality);
-
-      await client.query(
-        `UPDATE spaced_repetition_queue
-         SET interval_days  = $1,
-             ease_factor    = $2,
-             repetitions    = $3,
-             next_review_at = $4
-         WHERE user_id = $5 AND question_id = $6`,
-        [updated.interval_days, updated.ease_factor, updated.repetitions,
-         updated.next_review_at, userId, questionId]
+      const { rows } = await query(
+        `SELECT q.*, s.name as subject_name, c.name as chapter_name, t.name as topic_name
+         FROM questions q
+         JOIN topics t ON t.id = q.topic_id
+         JOIN chapters c ON c.id = t.chapter_id
+         JOIN subjects s ON s.id = c.subject_id
+         ${where}
+         ORDER BY q.created_at DESC
+         LIMIT ${parseInt(limit)} OFFSET ${offset}`,
+        params
       );
 
-      srUpdate = {
-        next_review_at: updated.next_review_at,
-        interval_days:  updated.interval_days,
-        repetitions:    updated.repetitions,
-      };
-    } else if (!isCorrect) {
-      // Wrong answer first time — add to SR queue with defaults
-      await client.query(
-        `INSERT INTO spaced_repetition_queue
-           (user_id, question_id, next_review_at, interval_days, ease_factor, repetitions)
-         VALUES ($1, $2, NOW() + INTERVAL '1 day', $3, $4, 0)
-         ON CONFLICT (user_id, question_id) DO NOTHING`,
-        [userId, questionId, SM2.DEFAULT_EASE_FACTOR !== undefined ? 1 : 1, SM2.DEFAULT_EASE_FACTOR]
+      const countRes = await query(
+        `SELECT COUNT(*) FROM questions q
+         JOIN topics t ON t.id = q.topic_id
+         JOIN chapters c ON c.id = t.chapter_id
+         JOIN subjects s ON s.id = c.subject_id
+         ${where}`,
+        params
       );
-      srUpdate = { message: 'Added to spaced repetition queue for review tomorrow.' };
+
+      res.json({
+        success: true,
+        data: rows,
+        pagination: {
+          total: parseInt(countRes.rows[0].count),
+          page: parseInt(page),
+          limit: parseInt(limit)
+        }
+      });
+    } catch (err) { next(err); }
+  },
+
+  createQuestion: async (req, res, next) => {
+    try {
+      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url } = req.body;
+      const { rows } = await query(
+        `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11)
+         RETURNING *`,
+        [topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty.toLowerCase(), source, image_url]
+      );
+      res.status(201).json({ success: true, data: rows[0] });
+    } catch (err) { next(err); }
+  },
+
+  updateQuestion: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, is_active } = req.body;
+      const { rows } = await query(
+        `UPDATE questions 
+         SET topic_id = $1, body = $2, option_a = $3, option_b = $4, option_c = $5, option_d = $6, 
+             correct_option = $7, explanation_text = $8, difficulty = $9::difficulty_level, source = $10::question_source, is_active = $11
+         WHERE id = $12 
+         RETURNING *`,
+        [topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty.toLowerCase(), source, is_active, id]
+      );
+      res.json({ success: true, data: rows[0] });
+    } catch (err) { next(err); }
+  },
+
+  deleteQuestion: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await query('UPDATE questions SET is_active = FALSE WHERE id = $1', [id]);
+      res.json({ success: true, message: 'Question deleted' });
+    } catch (err) { next(err); }
+  },
+
+  bulkCreateQuestions: async (req, res, next) => {
+    const client = await getClient();
+    try {
+      const { questions } = req.body;
+      await client.query('BEGIN');
+      const results = [];
+      
+      for (const q of questions) {
+        let sRes = await client.query('SELECT id FROM subjects WHERE name = $1', [q.subject]);
+        let sId = sRes.rows[0]?.id;
+        if (!sId) {
+          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2) RETURNING id', [q.subject, q.examType === 'NEET' ? 'NEET' : 'JEE']);
+          sId = sRes.rows[0].id;
+        }
+
+        let cRes = await client.query('SELECT id FROM chapters WHERE name = $1 AND subject_id = $2', [q.chapter, sId]);
+        let cId = cRes.rows[0]?.id;
+        if (!cId) {
+          cRes = await client.query('INSERT INTO chapters (name, subject_id, class_level) VALUES ($1, $2, $3) RETURNING id', [q.chapter, sId, 11]);
+          cId = cRes.rows[0].id;
+        }
+
+        let tRes = await client.query('SELECT id FROM topics WHERE name = $1 AND chapter_id = $2', [q.topic, cId]);
+        let tId = tRes.rows[0]?.id;
+        if (!tId) {
+          tRes = await client.query('INSERT INTO topics (name, chapter_id) VALUES ($1, $2) RETURNING id', [q.topic, cId]);
+          tId = tRes.rows[0].id;
+        }
+
+        const qRes = await client.query(
+          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           RETURNING id`,
+          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Bulk Upload']
+        );
+        results.push(qRes.rows[0].id);
+      }
+
+      await client.query('COMMIT');
+      res.status(201).json({ success: true, count: results.length });
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      next(err);
+    } finally {
+      client.release();
     }
-
-    await client.query('COMMIT');
-
-    // Record activity for streak (Async)
-    recordDailyActivity(userId).catch(err => logger.error('Streak update failed:', err));
-
-    // Invalidate dashboard cache for this user
-    await redis.del(`dashboard:${userId}`);
-
-    res.status(201).json({
-      success: true,
-      data: {
-        attempt_id:       attemptRes.rows[0].id,
-        attempted_at:     attemptRes.rows[0].attempted_at,
-        is_correct:       isCorrect,
-        correct_option,
-        explanation:      explanation_text,
-        difficulty,
-        spaced_repetition: srUpdate,
-      },
-    });
-  } catch (err) {
-    await client.query('ROLLBACK').catch(() => {});
-    next(err);
-  } finally {
-    client.release();
   }
 };
 
-module.exports = { getNext, submitAttempt };
+module.exports = questionsController;

@@ -1,7 +1,9 @@
 const express    = require('express');
 const router     = express.Router();
 const ctrl       = require('./auth.controller');
+const inviteCtrl = require('./invite.controller');
 const { authMiddleware } = require('../../middleware/auth');
+const { adminMiddleware } = require('../../middleware/admin');
 const { authLimiter }    = require('../../middleware/rateLimit');
 const { validate, z }    = require('../../middleware/validate');
 
@@ -16,12 +18,15 @@ const updateSchema = {
 };
 
 router.post('/verify-token', authLimiter, validate(verifySchema), ctrl.verifyToken);
-router.post('/demo-login',   (req, res) => {
-  const { signToken } = require('../../utils/jwt');
-  const token = signToken({ userId: 'demo-student-id' });
-  res.json({ success: true, token, user: { name: 'Demo Student', target_exam: 'NEET' } });
-});
+
 router.get('/me',            authMiddleware, ctrl.getMe);
 router.patch('/me',          authMiddleware, validate(updateSchema), ctrl.updateMe);
+
+// Admin
+router.get('/admin/users',       authMiddleware, adminMiddleware, ctrl.listUsers);
+router.post('/admin/invite',      authMiddleware, adminMiddleware, inviteCtrl.createInvite);
+router.get('/admin/invites',     authMiddleware, adminMiddleware, inviteCtrl.listInvites);
+router.get('/admin/invites/:id', inviteCtrl.getInvite); // Public check
+router.post('/admin/accept-invite', inviteCtrl.acceptInvite); // Public acceptance
 
 module.exports = router;

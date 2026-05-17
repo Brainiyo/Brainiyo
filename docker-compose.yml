@@ -54,5 +54,31 @@ services:
     volumes:
       - ./backend/src:/app/src  # hot reload in dev
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: brainiyo_admin
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+
+  student:
+    build:
+      context: ./student-web
+      dockerfile: Dockerfile
+    container_name: brainiyo_student
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+
 volumes:
   pgdata:

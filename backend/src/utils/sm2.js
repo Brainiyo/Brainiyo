@@ -1,51 +1,46 @@
-const { calculateNextReview } = require('../modules/adaptive-engine/adaptive.service');
-
 /**
- * Map (isCorrect, timeTakenSeconds) → SM-2 quality score 0–5
- * 
- * 5 = perfect recall, very fast   (correct + <20 s)
- * 4 = correct recall, normal pace (correct + 20–90 s)
- * 3 = incorrect but remembered after seeing answer (slow incorrect)
- * 2 = incorrect but remembered after seeing answer (fast incorrect)
- * 1 = wrong + spent meaningful time
- * 0 = wrong/skipped quickly
- *
- * @param {boolean} isCorrect
- * @param {number}  timeTakenSeconds
- * @returns {0|1|2|3|4|5}
+ * SM-2 Algorithm Implementation
+ * @param {number} quality - 0-5 (0: total failure, 5: perfect response)
+ * @param {number} repetitions - previous repetitions
+ * @param {number} easeFactor - previous ease factor
+ * @param {number} interval - previous interval in days
+ * @returns {object} { repetitions, easeFactor, interval, nextReviewDate }
  */
-const qualityScore = (isCorrect, timeTakenSeconds) => {
-  if (isCorrect) {
-    return timeTakenSeconds < 20 ? 5 : 4;
+function calculateSM2(quality, repetitions, easeFactor, interval) {
+  let nextRepetitions;
+  let nextEaseFactor;
+  let nextInterval;
+
+  if (quality >= 3) {
+    // Correct response
+    if (repetitions === 0) {
+      nextInterval = 1;
+    } else if (repetitions === 1) {
+      nextInterval = 6;
+    } else {
+      nextInterval = Math.round(interval * easeFactor);
+    }
+    nextRepetitions = repetitions + 1;
+  } else {
+    // Incorrect response
+    nextRepetitions = 0;
+    nextInterval = 1;
   }
-  // Incorrect cases
-  if (timeTakenSeconds > 90) return 1;
-  if (timeTakenSeconds > 60) return 2;
-  if (timeTakenSeconds > 30) return 3;
-  return 0;
-};
 
-/**
- * Apply the SM-2 algorithm to a flashcard and return updated state.
- *
- * @param {{ interval_days: number, ease_factor: number, repetitions: number }} card
- * @param {number} quality  0–5
- * @returns {{ interval_days: number, ease_factor: number, repetitions: number, next_review_at: Date }}
- */
-const applySM2 = (card, quality) => {
-  const result = calculateNextReview(
-    quality,
-    card.repetitions,
-    card.interval_days,
-    card.ease_factor
-  );
+  // Calculate next Ease Factor (EF)
+  // EF' = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+  nextEaseFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+  if (nextEaseFactor < 1.3) nextEaseFactor = 1.3;
+
+  const nextReviewDate = new Date();
+  nextReviewDate.setDate(nextReviewDate.getDate() + nextInterval);
 
   return {
-    interval_days: result.newInterval,
-    ease_factor: result.newEaseFactor,
-    repetitions: result.newRepetitions,
-    next_review_at: result.nextReviewDate
+    repetitions: nextRepetitions,
+    easeFactor: nextEaseFactor,
+    interval: nextInterval,
+    nextReviewDate
   };
-};
+}
 
-module.exports = { qualityScore, applySM2 };
+module.exports = { calculateSM2 };

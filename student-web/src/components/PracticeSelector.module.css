@@ -1,0 +1,136 @@
+.selector {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 40px;
+}
+
+.stepIndicator {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.stepDot {
+  width: 40px;
+  height: 6px;
+  border-radius: 10px;
+  background: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.stepDotActive {
+  background: #4f46e5;
+  width: 60px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border: 2px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.card:hover {
+  border-color: #4f46e5;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+}
+
+.cardIcon {
+  font-size: 48px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.listItem {
+  background: white;
+  border: 2px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.listItem:hover {
+  border-color: #4f46e5;
+  background: #f8fafc;
+}
+
+.itemInfo h4 {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.itemStats {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.accuracy {
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.actions {
+  margin-top: 40px;
+  display: flex;
+  gap: 16px;
+}
+
+.countSelector {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.countBtn {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.countBtnActive {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}

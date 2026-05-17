@@ -10,14 +10,16 @@ const path        = require('path');
 const logger           = require('./utils/logger');
 const { rateLimiter }  = require('./middleware/rateLimit');
 const { errorHandler } = require('./middleware/errorHandler');
+const { pool }         = require('./config/db');
 
 // Route modules
 const authRoutes         = require('./modules/auth/auth.routes');
-const contentRoutes      = require('./modules/curriculum/curriculum.routes');
-const questionsRoutes    = require('./modules/questions/questions.routes');
+const curriculumRoutes   = require('./modules/curriculum/curriculum.routes');
 const analyticsRoutes    = require('./modules/analytics/analytics.routes');
-const mocktestRoutes     = require('./modules/mock-tests/mocktest.routes');
+const questionsRoutes    = require('./modules/questions/questions.routes');
+const mocktestRoutes     = require('./modules/mock-tests/mock-tests.routes');
 const subscriptionRoutes = require('./modules/subscriptions/subscription.routes');
+const bookmarkRoutes     = require('./modules/bookmarks/bookmarks.routes');
 const retentionRoutes    = require('./modules/retention/retention.controller');
 const { initRetentionCron } = require('./modules/retention/cron');
 
@@ -38,7 +40,10 @@ app.use(helmet({
   }
 }));
 app.use(cors({
-  origin:      (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean),
+  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:8081,http://localhost:5173')
+    .split(',')
+    .filter(Boolean)
+    .map(o => o.trim()),
   credentials: true,
 }));
 
@@ -58,8 +63,40 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ── Health ────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', env: process.env.NODE_ENV, ts: new Date().toISOString() });
+app.get('/health', async (req, res) => {
+  const dbStatus    = await pool.query('SELECT 1').then(() => 'up').catch(() => 'down');
+  const redisStatus = await require('./config/redis').ping().then(() => 'up').catch(() => 'down');
+  
+  const isHealthy = dbStatus === 'up' && redisStatus === 'up';
+  
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'ok' : 'degraded',
+    checks: { database: dbStatus, redis: redisStatus },
+    env:    process.env.NODE_ENV,
+    ts:     new Date().toISOString()
+  });
+});
+
+app.get('/api/health/deep', async (req, res) => {
+  const start = Date.now();
+  const dbStart = Date.now();
+  const dbCheck = await pool.query('SELECT 1').then(() => Date.now() - dbStart).catch(() => -1);
+  
+  const redisStart = Date.now();
+  const redisCheck = await require('./config/redis').ping().then(() => Date.now() - redisStart).catch(() => -1);
+  
+  res.json({
+    status: (dbCheck > 0 && redisCheck > 0) ? 'optimal' : 'degraded',
+    latency: {
+      total: Date.now() - start,
+      database: dbCheck,
+      redis: redisCheck
+    },
+    version: require('../package.json').version,
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    node: process.version
+  });
 });
 
 // ── Rate limiter ─────────────────────────────────────────────────────
@@ -67,10 +104,12 @@ app.use(API, rateLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────────
 app.use(`${API}/auth`,          authRoutes);
-app.use(`${API}/content`,       contentRoutes);
+app.use(`${API}/content`,       curriculumRoutes);
+app.use(`${API}/curriculum`,    curriculumRoutes);
 app.use(`${API}/questions`,     questionsRoutes);
 app.use(`${API}/analytics`,     analyticsRoutes);
 app.use(`${API}/mock-tests`,    mocktestRoutes);
+app.use(`${API}/bookmarks`,     bookmarkRoutes);
 app.use(`${API}/subscriptions`, subscriptionRoutes);
 app.use(`${API}/retention`,     retentionRoutes);
 

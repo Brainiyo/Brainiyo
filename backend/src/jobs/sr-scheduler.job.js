@@ -1,6 +1,16 @@
 const cron = require('node-cron');
 const { query } = require('../config/db');
 const logger = require('../utils/logger');
+const { AppError } = require('../middleware/errorHandler');
+
+/**
+ * Placeholder for Firebase Cloud Messaging (FCM)
+ */
+async function sendPushNotification(userId, message) {
+  logger.info(`[FCM Placeholder] Sending notification to User ${userId}: ${message}`);
+  // In production, use admin.messaging().send()
+  return true;
+}
 
 /**
  * Daily job: log count of due SR reviews per user (extend for push notifications)
@@ -23,10 +33,9 @@ const srSchedulerJob = cron.schedule(
 
       logger.info(`[SR Scheduler] ${result.rows.length} users have due reviews`);
 
-      // TODO: integrate with FCM (Firebase Cloud Messaging) to send push notifications
-      // for (const row of result.rows) {
-      //   await sendPushNotification(row.user_id, `You have ${row.due_count} questions to review today!`);
-      // }
+      for (const row of result.rows) {
+        await sendPushNotification(row.user_id, `You have ${row.due_count} questions to review today!`);
+      }
     } catch (err) {
       logger.error('[SR Scheduler] Job failed', { error: err.message });
     }

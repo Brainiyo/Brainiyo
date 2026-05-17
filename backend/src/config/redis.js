@@ -1,53 +1,67 @@
+const Redis = require('ioredis');
 const logger = require('../utils/logger');
 
-// In-memory Mock Redis so the app works fully on Windows without needing Docker/Redis
-class MockRedis {
-  constructor() {
-    this.store = new Map();
-    this.lists = new Map();
-    logger.info('Using in-memory Mock Redis');
-  }
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-  async get(key) { return this.store.get(key) || null; }
-  
-  async set(key, value) { this.store.set(key, value); return 'OK'; }
-  
-  async setex(key, seconds, value) { this.store.set(key, value); return 'OK'; }
-  
-  async del(key) { this.store.delete(key); return 1; }
-  
-  async incr(key) {
-    const val = parseInt(this.store.get(key) || '0', 10) + 1;
-    this.store.set(key, val.toString());
+const redis = new Redis(REDIS_URL, {
+  retryStrategy: (times) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+  maxRetriesPerRequest: 1,
+  enableOfflineQueue: false, // Don't hang requests when disconnected
+});
+
+redis.on('connect', () => {
+  logger.info('Connected to Redis ✓');
+});
+
+redis.on('error', (err) => {
+  logger.error('Redis Error', { error: err.message });
+});
+
+// Memory fallback for when Redis is down
+const memoryStorage = new Map();
+
+const isRedisUp = () => redis.status === 'ready';
+
+// Safe wrappers to prevent API crashes/hangs when Redis is down
+const safeRedis = {
+  ...redis,
+  get: async (key) => {
+    if (isRedisUp()) {
+      try { return await redis.get(key); } catch (e) { return memoryStorage.get(key); }
+    }
+    return memoryStorage.get(key);
+  },
+  setex: async (key, ttl, val) => {
+    if (isRedisUp()) {
+      try { return await redis.setex(key, ttl, val); } catch (e) { /* fallback */ }
+    }
+    memoryStorage.set(key, val);
+    setTimeout(() => memoryStorage.delete(key), ttl * 1000);
+    return 'OK';
+  },
+  del: async (key) => {
+    if (isRedisUp()) {
+      try { return await redis.del(key); } catch (e) { /* fallback */ }
+    }
+    return memoryStorage.delete(key);
+  },
+  set: async (key, val, ...args) => {
+    if (isRedisUp()) {
+      try { return await redis.set(key, val, ...args); } catch (e) { /* fallback */ }
+    }
+    return memoryStorage.set(key, val);
+  },
+  incr: async (key) => {
+    if (isRedisUp()) {
+      try { return await redis.incr(key); } catch (e) { /* fallback */ }
+    }
+    const val = (parseInt(memoryStorage.get(key)) || 0) + 1;
+    memoryStorage.set(key, val.toString());
     return val;
   }
-  
-  async expire(key, seconds) { return 1; }
-  
-  async expireat(key, timestamp) { return 1; }
-  
-  async expireAt(key, timestamp) { return 1; }
-  
-  async lpush(key, value) {
-    if (!this.lists.has(key)) this.lists.set(key, []);
-    this.lists.get(key).unshift(value);
-    return this.lists.get(key).length;
-  }
-  
-  async lrange(key, start, stop) {
-    const list = this.lists.get(key) || [];
-    return list.slice(start, stop === -1 ? undefined : stop + 1);
-  }
-  
-  async ltrim(key, start, stop) {
-    if (this.lists.has(key)) {
-      this.lists.set(key, this.lists.get(key).slice(start, stop === -1 ? undefined : stop + 1));
-    }
-    return 'OK';
-  }
-  
-  on(event, handler) {}
-}
+};
 
-const redis = new MockRedis();
-module.exports = redis;
+module.exports = safeRedis;

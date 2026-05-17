@@ -22,12 +22,12 @@ const verifyToken = async (req, res, next) => {
 
     // 2. Upsert user in our DB
     const result = await query(
-      `INSERT INTO users (firebase_uid, name, email, phone, target_exam, class, is_verified)
-       VALUES ($1, $2, $3, $4, 'NEET', 11, TRUE)
+      `INSERT INTO users (firebase_uid, name, email, phone, target_exam, class, is_verified, is_onboarded)
+       VALUES ($1, $2, $3, $4, 'NEET', 11, TRUE, FALSE)
        ON CONFLICT (firebase_uid) DO UPDATE
          SET email      = COALESCE(EXCLUDED.email, users.email),
              last_login = NOW()
-       RETURNING id, firebase_uid, name, email, phone, class, target_exam, created_at`,
+       RETURNING id, firebase_uid, name, email, phone, class, target_exam, is_onboarded, created_at`,
       [uid, name || 'Student', email || null, phone_number || null]
     );
 
@@ -71,11 +71,12 @@ const updateMe = async (req, res, next) => {
 
     const result = await query(
       `UPDATE users
-       SET name        = COALESCE($1, name),
-           class       = COALESCE($2, class),
-           target_exam = COALESCE($3, target_exam)
+       SET name         = COALESCE($1, name),
+           class        = COALESCE($2, class),
+           target_exam  = COALESCE($3, target_exam),
+           is_onboarded = TRUE
        WHERE id = $4
-       RETURNING id, name, email, phone, class, target_exam`,
+       RETURNING id, name, email, phone, class, target_exam, is_onboarded`,
       [name || null, studentClass || null, target_exam || null, req.user.id]
     );
 
@@ -83,4 +84,14 @@ const updateMe = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { verifyToken, getMe, updateMe };
+const listUsers = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT id, name, email, phone, class, target_exam, is_onboarded, created_at, last_login
+       FROM users ORDER BY created_at DESC`
+    );
+    res.json({ success: true, data: rows });
+  } catch (err) { next(err); }
+};
+
+module.exports = { verifyToken, getMe, updateMe, listUsers };

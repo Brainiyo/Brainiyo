@@ -161,4 +161,138 @@ const getChapterHeatmap = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getDashboard, getChapterHeatmap };
+/* ──────────────────────────────────────────────────────────────────
+   GET /api/analytics/public-stats
+
+   Returns aggregate platform-wide stats for landing page.
+────────────────────────────────────────────────────────────────────*/
+const getPublicStats = async (req, res, next) => {
+  try {
+    const cacheKey = 'public_stats';
+    const cached = await redis.get(cacheKey);
+    if (cached) return res.json({ success: true, data: JSON.parse(cached) });
+
+    const [userCount, attemptCount, questionCount] = await Promise.all([
+      query('SELECT COUNT(*) FROM users'),
+      query('SELECT COUNT(*) FROM student_attempts'),
+      query('SELECT COUNT(*) FROM questions'),
+    ]);
+
+    const data = {
+      total_students:  parseInt(userCount.rows[0].count, 10),
+      total_attempts:  parseInt(attemptCount.rows[0].count, 10),
+      total_questions: parseInt(questionCount.rows[0].count, 10),
+    };
+
+    await redis.setex(cacheKey, 3600, JSON.stringify(data)); // Cache for 1 hour
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/* ──────────────────────────────────────────────────────────────────
+   GET /api/analytics/leaderboard
+
+   Returns the top 50 students for the user's exam type based on XP.
+────────────────────────────────────────────────────────────────────*/
+const getLeaderboard = async (req, res, next) => {
+  try {
+    const userExam = req.user.target_exam;
+    
+    const { rows } = await query(
+      `SELECT id, name, xp_points FROM users WHERE target_exam = $1`,
+      [userExam]
+    );
+
+    let leaderboard = rows.map(r => ({ ...r, is_current_user: r.id === req.user.id }));
+
+    // If there aren't many active users, blend in high-quality competitive mock peers
+    if (leaderboard.length < 15) {
+      const mockPeers = [
+        { name: 'Arnav Sharma', xp_points: 1540 },
+        { name: 'Priya Patel', xp_points: 1210 },
+        { name: 'Rohan Deshmukh', xp_points: 980 },
+        { name: 'Ananya Iyer', xp_points: 840 },
+        { name: 'Kabir Verma', xp_points: 620 },
+        { name: 'Sneha Reddy', xp_points: 450 },
+        { name: 'Ishaan Gupta', xp_points: 310 },
+        { name: 'Diya Mehta', xp_points: 190 },
+        { name: 'Aditya Rao', xp_points: 90 },
+        { name: 'Tanvi Sen', xp_points: 40 },
+      ];
+
+      mockPeers.forEach((peer, i) => {
+        if (!leaderboard.some(u => u.name.toLowerCase() === peer.name.toLowerCase())) {
+          leaderboard.push({
+            id: `mock-peer-${i}`,
+            name: peer.name,
+            xp_points: peer.xp_points,
+            is_current_user: false
+          });
+        }
+      });
+    }
+
+    // Sort by XP descending
+    leaderboard.sort((a, b) => b.xp_points - a.xp_points);
+
+    // Dynamic Dense Rank calculation
+    let currentRank = 1;
+    let prevXp = null;
+    leaderboard.forEach((user) => {
+      if (prevXp !== null && user.xp_points < prevXp) {
+        currentRank++;
+      }
+      user.rank = currentRank;
+      prevXp = user.xp_points;
+    });
+
+    const currentUserRank = leaderboard.find(r => r.id === req.user.id);
+
+    res.json({ 
+      success: true, 
+      data: {
+        leaderboard: leaderboard.slice(0, 50),
+        current_user: currentUserRank
+      }
+    });
+  } catch (err) { next(err); }
+};
+
+const getAdminOverview = async (req, res, next) => {
+  try {
+    const [statsRes, signupRes, subjectRes] = await Promise.all([
+      query(`
+        SELECT 
+          (SELECT COUNT(*) FROM users) as total_students,
+          (SELECT COUNT(*) FROM questions WHERE is_active = TRUE) as total_questions,
+          (SELECT COUNT(*) FROM student_attempts) as total_attempts,
+          (SELECT COUNT(*) FROM users WHERE created_at >= NOW() - INTERVAL '24 hours') as new_signups_24h
+      `),
+      query(`
+        SELECT DATE(created_at) as date, COUNT(*) as count
+        FROM users
+        WHERE created_at >= NOW() - INTERVAL '30 days'
+        GROUP BY 1 ORDER BY 1 ASC
+      `),
+      query(`
+        SELECT s.name, COUNT(q.id) as count
+        FROM subjects s
+        LEFT JOIN chapters c ON c.subject_id = s.id
+        LEFT JOIN topics t ON t.chapter_id = c.id
+        LEFT JOIN questions q ON q.topic_id = t.id AND q.is_active = TRUE
+        GROUP BY s.id, s.name
+      `)
+    ]);
+
+    res.json({ 
+      success: true, 
+      data: {
+        stats: statsRes.rows[0],
+        signup_chart: signupRes.rows,
+        subject_breakdown: subjectRes.rows
+      }
+    });
+  } catch (err) { next(err); }
+};
+
+module.exports = { getDashboard, getChapterHeatmap, getPublicStats, getLeaderboard, getAdminOverview };

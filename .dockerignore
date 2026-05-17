@@ -1,0 +1,11 @@
+node_modules
+.git
+.env
+.next
+admin
+frontend
+dist
+build
+*.log
+.DS_Store
+firebase-service-account.json

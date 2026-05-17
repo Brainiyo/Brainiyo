@@ -1,0 +1,16 @@
+{
+  "name": "brainiyo-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../student-web && npm install && cd ../admin && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:student": "cd student-web && npm run dev",
+    "dev:admin": "cd admin && npm run dev",
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:student\" \"npm run dev:admin\"",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

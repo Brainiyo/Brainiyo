@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
     const decoded = verifyToken(header.split(' ')[1]);
 
     const result = await query(
-      `SELECT id, firebase_uid, name, phone, email, class, target_exam
+      `SELECT id, firebase_uid, name, phone, email, class, target_exam, is_onboarded, role
        FROM users WHERE id = $1`,
       [decoded.userId]
     );

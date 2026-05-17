@@ -1,0 +1,197 @@
+.dashboard {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statValue {
+  font-size: 36px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.statLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+}
+
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: white;
+  border-radius: 32px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.subjectBars {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.subjectItem {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subjectMeta {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.barContainer {
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s ease-out;
+}
+
+.weakTopics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topicCard {
+  padding: 20px;
+  background: #fff1f2;
+  border-left: 4px solid #f43f5e;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topicName {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.topicMeta {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.accuracyBadge {
+  background: #be123c;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.masteryContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.masteryCircle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.svgCircle {
+  transform: rotate(-90deg);
+}
+
+.circleBg {
+  fill: none;
+  stroke: #f1f5f9;
+  stroke-width: 12;
+}
+
+.circleFill {
+  fill: none;
+  stroke: #4f46e5;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s ease-out;
+}
+
+.circleText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.masteryValue {
+  display: block;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.masteryLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
