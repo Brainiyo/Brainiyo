@@ -31,22 +31,17 @@ export default function LandingPage() {
           <div className={styles.navItems}>
             <a href="#features" className={styles.navLink}>Features</a>
             <a href="#comparison" className={styles.navLink}>Why Us</a>
-            <a href="#how" className={styles.navLink}>Methodology</a>
+            <a href="#how" className={styles.navLink}>How it Works</a>
             <a href="#pricing" className={styles.navLink}>Pricing</a>
+            <a href="#faqs" className={styles.navLink}>FAQs</a>
           </div>
           <div className={styles.navActions}>
-            {!authLoading && (
-              <>
-                <Button variant="outline" size="sm" onClick={() => window.location.href = portalUrl}>
-                  {isAuthenticated ? 'My Dashboard' : 'Student Portal'}
-                </Button>
-                {!isAuthenticated && (
-                  <Button variant="primary" size="sm" onClick={() => window.location.href = portalUrl}>
-                    Get Started
-                  </Button>
-                )}
-              </>
-            )}
+            <Button variant="outline" size="sm" onClick={() => window.location.href = 'https://brainiyo-student.vercel.app/dashboard'} style={{ borderRadius: '100px', borderColor: '#4f46e5', color: '#4f46e5', fontWeight: 700, padding: '8px 20px' }}>
+              Practice Portal
+            </Button>
+            <Button variant="primary" size="sm" onClick={() => window.location.href = 'https://brainiyo-admin.vercel.app/dashboard'} style={{ borderRadius: '100px', background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontWeight: 700, padding: '8px 20px', border: 'none', boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.3)' }}>
+              Admin Dashboard
+            </Button>
           </div>
         </div>
       </nav>
@@ -98,9 +93,86 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
+            style={{ position: 'relative' }}
           >
+            {/* Floating Premium Topic Tags */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              style={{
+                position: 'absolute',
+                left: '-40px',
+                top: '25%',
+                zIndex: 10,
+                background: 'white',
+                color: '#4f46e5',
+                padding: '10px 18px',
+                borderRadius: '100px',
+                boxShadow: '0 20px 40px -15px rgba(79, 70, 229, 0.2)',
+                border: '1px solid rgba(79, 70, 229, 0.1)',
+                fontSize: '13px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <span style={{ color: '#f59e0b' }}>⚡</span> Electrostatics
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              style={{
+                position: 'absolute',
+                left: '-50px',
+                bottom: '18%',
+                zIndex: 10,
+                background: 'white',
+                color: '#e11d48',
+                padding: '10px 18px',
+                borderRadius: '100px',
+                boxShadow: '0 20px 40px -15px rgba(225, 29, 72, 0.2)',
+                border: '1px solid rgba(225, 29, 72, 0.1)',
+                fontSize: '13px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <span style={{ color: '#10b981' }}>🧪</span> Organic Reactions
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.0, duration: 0.6 }}
+              style={{
+                position: 'absolute',
+                right: '-30px',
+                bottom: '10%',
+                zIndex: 10,
+                background: 'white',
+                color: '#0d9488',
+                padding: '10px 18px',
+                borderRadius: '100px',
+                boxShadow: '0 20px 40px -15px rgba(13, 148, 136, 0.2)',
+                border: '1px solid rgba(13, 148, 136, 0.1)',
+                fontSize: '13px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <span style={{ color: '#ec4899' }}>🧬</span> Molecular Genetics
+            </motion.div>
+
             {/* Visual Phone Mockup - Functional Version */}
-            <div style={{ position: 'relative', width: '330px', margin: '0 auto' }}>
+            <div style={{ position: 'relative', width: '330px', margin: '0 auto', filter: 'drop-shadow(0 25px 50px rgba(15, 23, 42, 0.15))' }}>
               <div style={{ background: '#0f172a', borderRadius: '48px', border: '12px solid #1e293b', padding: '24px 20px', height: '600px', color: 'white', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ width: '70px', height: '5px', background: '#e2e8f0', borderRadius: '10px', margin: '0 auto 24px' }}></div>
                 
