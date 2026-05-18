@@ -20,7 +20,7 @@
   border-radius: 32px;
   padding: 40px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  color: #0f172a;
+  color: var(--text);
 }
 
 .onboardingCard h1 {
@@ -33,7 +33,7 @@
 }
 
 .onboardingCard p {
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 32px;
   line-height: 1.6;
 }
@@ -59,8 +59,8 @@
 }
 
 .optionBtn {
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
+  background: var(--bg);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   font-weight: 600;
@@ -73,14 +73,14 @@
 }
 
 .optionBtn:hover {
-  border-color: #cbd5e1;
-  background: #f1f5f9;
+  border-color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .optionBtn.active {
-  border-color: #4f46e5;
-  background: #eff6ff;
-  color: #4f46e5;
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .optionIcon {

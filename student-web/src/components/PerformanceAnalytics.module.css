@@ -37,7 +37,7 @@
 .statValue {
   font-size: 36px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text);
 }
 
 .statLabel {
@@ -96,7 +96,7 @@
 
 .barContainer {
   height: 12px;
-  background: #f1f5f9;
+  background: var(--border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -115,7 +115,7 @@
 
 .topicCard {
   padding: 20px;
-  background: #fff1f2;
+  background: rgba(244, 63, 94, 0.1);
   border-left: 4px solid #f43f5e;
   border-radius: 16px;
   display: flex;
@@ -162,7 +162,7 @@
 
 .circleBg {
   fill: none;
-  stroke: #f1f5f9;
+  stroke: var(--border);
   stroke-width: 12;
 }
 
