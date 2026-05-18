@@ -269,7 +269,7 @@ const questionsController = {
         let sRes = await client.query('SELECT id FROM subjects WHERE name = $1', [q.subject]);
         let sId = sRes.rows[0]?.id;
         if (!sId) {
-          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2) RETURNING id', [q.subject, q.examType === 'NEET' ? 'NEET' : 'JEE']);
+          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2::exam_type) RETURNING id', [q.subject, q.examType === 'NEET' ? 'NEET' : 'JEE']);
           sId = sRes.rows[0].id;
         }
 
@@ -289,9 +289,9 @@ const questionsController = {
 
         const qRes = await client.query(
           `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source)
            RETURNING id`,
-          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Bulk Upload']
+          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard']
         );
         results.push(qRes.rows[0].id);
       }
