@@ -39,11 +39,27 @@ app.use(helmet({
     }
   }
 }));
-app.use(cors({
-  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:3001,http://localhost:8080,http://localhost:8081,http://localhost:5173,https://brainiyo-student.vercel.app,https://brainiyo-admin.vercel.app,https://brainiyo.vercel.app')
+const defaultOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:8080',
+  'http://localhost:8081',
+  'http://localhost:5173',
+  'https://brainiyo-student.vercel.app',
+  'https://brainiyo-admin.vercel.app',
+  'https://brainiyo.vercel.app'
+];
+
+const allowedOrigins = [
+  ...defaultOrigins,
+  ...(process.env.ALLOWED_ORIGINS || '')
     .split(',')
     .filter(Boolean)
-    .map(o => o.trim()),
+    .map(o => o.trim())
+];
+
+app.use(cors({
+  origin: allowedOrigins,
   credentials: true,
 }));
 
