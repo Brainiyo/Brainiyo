@@ -40,7 +40,7 @@ app.use(helmet({
   }
 }));
 app.use(cors({
-  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:8081,http://localhost:5173')
+  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:3001,http://localhost:8080,http://localhost:8081,http://localhost:5173,https://brainiyo-student.vercel.app,https://brainiyo-admin.vercel.app,https://brainiyo.vercel.app')
     .split(',')
     .filter(Boolean)
     .map(o => o.trim()),
@@ -65,12 +65,14 @@ if (process.env.NODE_ENV !== 'test') {
 // ── Health ────────────────────────────────────────────────────────────
 app.get('/health', async (req, res) => {
   const dbStatus    = await pool.query('SELECT 1').then(() => 'up').catch(() => 'down');
-  const redisStatus = await require('./config/redis').ping().then(() => 'up').catch(() => 'down');
+  const redisStatus = require('./config/redis').status === 'ready' ? 'up' : 'down';
   
-  const isHealthy = dbStatus === 'up' && redisStatus === 'up';
+  // Redis is optional due to the safe memory fallback in config/redis.js,
+  // so the service is fully operational as long as the PostgreSQL database is up.
+  const isHealthy = dbStatus === 'up';
   
   res.status(isHealthy ? 200 : 503).json({
-    status: isHealthy ? 'ok' : 'degraded',
+    status: (dbStatus === 'up' && redisStatus === 'up') ? 'ok' : (dbStatus === 'up' ? 'degraded' : 'down'),
     checks: { database: dbStatus, redis: redisStatus },
     env:    process.env.NODE_ENV,
     ts:     new Date().toISOString()
@@ -83,7 +85,8 @@ app.get('/api/health/deep', async (req, res) => {
   const dbCheck = await pool.query('SELECT 1').then(() => Date.now() - dbStart).catch(() => -1);
   
   const redisStart = Date.now();
-  const redisCheck = await require('./config/redis').ping().then(() => Date.now() - redisStart).catch(() => -1);
+  const isRedisUp = require('./config/redis').status === 'ready';
+  const redisCheck = isRedisUp ? Date.now() - redisStart : -1;
   
   res.json({
     status: (dbCheck > 0 && redisCheck > 0) ? 'optimal' : 'degraded',
