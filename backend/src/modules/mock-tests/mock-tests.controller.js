@@ -142,10 +142,11 @@ module.exports = {
         `, [id, qId, nextOrder++]);
       }
 
-      // Update total_questions count in template
+      // Update total_questions count and max_marks in template
       await query(`
         UPDATE exam_templates 
-        SET total_questions = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1)
+        SET total_questions = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1),
+            max_marks = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1) * 4
         WHERE id = $1
       `, [id]);
 
@@ -158,10 +159,11 @@ module.exports = {
       const { id, questionId } = req.params;
       await query(`DELETE FROM exam_template_questions WHERE exam_template_id = $1 AND question_id = $2`, [id, questionId]);
       
-      // Update total_questions count
+      // Update total_questions count and max_marks in template
       await query(`
         UPDATE exam_templates 
-        SET total_questions = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1)
+        SET total_questions = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1),
+            max_marks = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1) * 4
         WHERE id = $1
       `, [id]);
 
@@ -176,25 +178,70 @@ module.exports = {
       const { questions } = req.body; // Array of question objects
 
       await client.query('BEGIN');
-      
+
+      // Verify template exists
+      const templateRes = await client.query(`SELECT * FROM exam_templates WHERE id = $1`, [id]);
+      if (templateRes.rows.length === 0) {
+        throw new AppError('Template not found', 404);
+      }
+
       // Get current max order_index
       const maxRes = await client.query(`SELECT MAX(order_index) FROM exam_template_questions WHERE exam_template_id = $1`, [id]);
       let nextOrder = (maxRes.rows[0].max || 0) + 1;
+      const results = [];
 
       for (const q of questions) {
-        // Find or create topic/chapter/subject logic similar to bulk upload
-        // For simplicity, we assume IDs are provided or we use names to find them.
-        // But the user's bulk upload usually has names.
+        let sRes = await client.query('SELECT id FROM subjects WHERE name = $1', [q.subject]);
+        let sId = sRes.rows[0]?.id;
+        if (!sId) {
+          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2::exam_type) RETURNING id', [q.subject, q.examType === 'NEET' ? 'NEET' : 'JEE']);
+          sId = sRes.rows[0].id;
+        }
+
+        let cRes = await client.query('SELECT id FROM chapters WHERE name = $1 AND subject_id = $2', [q.chapter, sId]);
+        let cId = cRes.rows[0]?.id;
+        if (!cId) {
+          cRes = await client.query('INSERT INTO chapters (name, subject_id, class_level) VALUES ($1, $2, $3) RETURNING id', [q.chapter, sId, 11]);
+          cId = cRes.rows[0].id;
+        }
+
+        let tRes = await client.query('SELECT id FROM topics WHERE name = $1 AND chapter_id = $2', [q.topic, cId]);
+        let tId = tRes.rows[0]?.id;
+        if (!tId) {
+          tRes = await client.query('INSERT INTO topics (name, chapter_id) VALUES ($1, $2) RETURNING id', [q.topic, cId]);
+          tId = tRes.rows[0].id;
+        }
+
+        const qRes = await client.query(
+          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source)
+           RETURNING id`,
+          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard']
+        );
         
-        // This is a complex logic, for now we will implement it such that it takes a list of question bodies
-        // and creates them using the template's default settings.
-        // Actually, let's just make it call the existing createQuestion logic in a loop.
+        const questionId = qRes.rows[0].id;
+        results.push(questionId);
+
+        // Associate with template
+        await client.query(`
+          INSERT INTO exam_template_questions (exam_template_id, question_id, order_index)
+          VALUES ($1, $2, $3)
+          ON CONFLICT DO NOTHING
+        `, [id, questionId, nextOrder++]);
       }
 
+      // Update total_questions count and max_marks in template
+      await client.query(`
+        UPDATE exam_templates 
+        SET total_questions = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1),
+            max_marks = (SELECT COUNT(*) FROM exam_template_questions WHERE exam_template_id = $1) * 4
+        WHERE id = $1
+      `, [id]);
+
       await client.query('COMMIT');
-      res.json({ success: true, message: 'Bulk creation placeholder' });
+      res.status(201).json({ success: true, count: results.length });
     } catch (err) {
-      await client.query('ROLLBACK');
+      await client.query('ROLLBACK').catch(() => {});
       next(err);
     } finally {
       client.release();

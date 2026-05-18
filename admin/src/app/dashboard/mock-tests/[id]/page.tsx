@@ -1,14 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { Loader2, Plus, Trash2, Search, ArrowLeft, LayoutGrid, Clock, Target, FileText, X } from 'lucide-react';
+import { Loader2, Plus, Trash2, Search, ArrowLeft, LayoutGrid, Clock, Target, FileText, X, Upload, FileDown, CheckCircle2, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/config';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { QuestionForm } from '@/components/forms/QuestionForm';
 import { Edit2 } from 'lucide-react';
+import Papa from 'papaparse';
 
 export default function MockTestDetailPage() {
   const params = useParams();
@@ -26,6 +27,12 @@ export default function MockTestDetailPage() {
   const [pickerLoading, setPickerLoading] = useState(false);
   const [pickerSearch, setPickerSearch] = useState('');
   const [selectedInPicker, setSelectedInPicker] = useState<string[]>([]);
+
+  // Bulk Upload state
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadResults, setUploadResults] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchDetails();
@@ -112,6 +119,80 @@ export default function MockTestDetailPage() {
     );
   };
 
+  const downloadTemplate = () => {
+    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation'];
+    const sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'Sample Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution'];
+    
+    const csv = Papa.unparse([headers, sample]);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brainiyo_bulk_${test?.title?.replace(/\s+/g, '_').toLowerCase() || 'mock'}_template.csv`;
+    a.click();
+  };
+
+  const handleBulkUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadResults(null);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (parsedResults) => {
+        const { data } = parsedResults;
+        try {
+          const token = localStorage.getItem('brainiyo_token');
+          const formattedQuestions = (data as any[]).map(row => ({
+            subject: row.subject,
+            chapter: row.chapter || 'Unknown',
+            topic: row.topic || 'Unknown',
+            difficulty: row.difficulty || 'medium',
+            examType: test.exam_type === 'NEET' ? 'NEET' : 'JEE Main',
+            body: row.questionText,
+            option_a: row.optionA,
+            option_b: row.optionB,
+            option_c: row.optionC,
+            option_d: row.optionD,
+            correct_option: row.correctAnswer,
+            explanation_text: row.explanation || '',
+          }));
+
+          const res = await fetch(`${API_BASE_URL}/mock-tests/admin/templates/${testId}/questions/bulk`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ questions: formattedQuestions })
+          });
+
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.message || 'Bulk upload failed');
+
+          setUploadResults({ success: result.count, failed: 0, errors: [] });
+          toast.success(`Successfully uploaded and linked ${result.count} questions!`);
+          fetchDetails();
+        } catch (err: any) {
+          console.error(err);
+          toast.error(`Bulk upload failed: ${err.message}`);
+          setUploadResults({ success: 0, failed: data.length, errors: [err.message] });
+        } finally {
+          setIsUploading(false);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+      },
+      error: (error) => {
+        console.error(error);
+        toast.error("Error parsing CSV file.");
+        setIsUploading(false);
+      }
+    });
+  };
+
   if (loading) return <div className="flex justify-center p-24"><Loader2 className="animate-spin text-indigo-500 w-10 h-10" /></div>;
 
   return (
@@ -139,6 +220,9 @@ export default function MockTestDetailPage() {
         <div className="flex items-center gap-3">
           <Button onClick={() => setShowPicker(true)} variant="outline" className="gap-2">
             <LayoutGrid size={18} /> Add from Bank
+          </Button>
+          <Button onClick={() => setShowBulkModal(true)} variant="outline" className="gap-2">
+            <Upload size={18} /> Bulk Upload
           </Button>
           <Button onClick={() => setShowNewQuestion(true)} className="gap-2">
             <Plus size={18} /> Add New Question
@@ -376,6 +460,114 @@ export default function MockTestDetailPage() {
                   fetchDetails();
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Upload Modal */}
+      {showBulkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-md p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-2xl max-h-[90vh] rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
+              <div>
+                <h2 className="text-2xl font-bold">CSV Bulk Question Upload</h2>
+                <p className="text-sm text-slate-500">Upload and link multiple questions to this test at once.</p>
+              </div>
+              <button onClick={() => { setShowBulkModal(false); setUploadResults(null); }} className="p-3 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-all">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+              <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-950/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
+                  Use our standardized CSV template for correct column mapping.
+                </p>
+                <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-2 shrink-0">
+                  <FileDown size={16} />
+                  Download Template
+                </Button>
+              </div>
+
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center transition-all cursor-pointer",
+                  isUploading 
+                    ? "opacity-50 pointer-events-none bg-slate-50 dark:bg-slate-950" 
+                    : "border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10"
+                )}
+              >
+                {isUploading ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+                    <p className="font-bold text-indigo-600">Uploading questions & linking to template...</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                      <Upload className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <p className="text-lg font-bold mb-1">Click to upload CSV</p>
+                    <p className="text-sm text-slate-400">or drag and drop your file here</p>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  accept=".csv"
+                  className="hidden"
+                />
+              </div>
+
+              <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-amber-800 dark:text-amber-400">
+                  <p className="font-bold mb-1">Instructions:</p>
+                  <ul className="list-disc list-inside space-y-1 opacity-90">
+                    <li>The CSV must contain columns: <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">subject</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">chapter</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">topic</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">difficulty</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">questionText</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionA</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionB</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionC</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionD</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">correctAnswer</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">explanation</code>.</li>
+                    <li>Correct Answer must be exactly A, B, C, or D.</li>
+                    <li>Exam Type will default to <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">{test?.exam_type}</code> for these questions.</li>
+                  </ul>
+                </div>
+              </div>
+
+              {uploadResults && (
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4">
+                  <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-slate-500 uppercase tracking-wider">
+                    Upload Summary
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-xl">
+                      <p className="text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                        <CheckCircle2 size={16} /> Success
+                      </p>
+                      <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{uploadResults.success}</p>
+                    </div>
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl">
+                      <p className="text-red-600 dark:text-red-400 text-[11px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                        <AlertCircle size={16} /> Failed
+                      </p>
+                      <p className="text-2xl font-bold text-red-700 dark:text-red-300">{uploadResults.failed}</p>
+                    </div>
+                  </div>
+                  
+                  {uploadResults.errors.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Errors</p>
+                      <div className="max-h-32 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg p-3 text-xs font-mono text-red-500 space-y-1">
+                        {uploadResults.errors.map((err, i) => <p key={i}>{err}</p>)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="p-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end bg-slate-50/50 dark:bg-slate-950/20">
+              <Button variant="outline" onClick={() => { setShowBulkModal(false); setUploadResults(null); }}>Close</Button>
             </div>
           </div>
         </div>
