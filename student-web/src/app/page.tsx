@@ -39,9 +39,6 @@ export default function LandingPage() {
             <Button variant="outline" size="sm" onClick={() => window.location.href = 'https://brainiyo-student.vercel.app/dashboard'} style={{ borderRadius: '100px', borderColor: '#4f46e5', color: '#4f46e5', fontWeight: 700, padding: '8px 20px' }}>
               Practice Portal
             </Button>
-            <Button variant="primary" size="sm" onClick={() => window.location.href = 'https://brainiyo-admin.vercel.app/dashboard'} style={{ borderRadius: '100px', background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontWeight: 700, padding: '8px 20px', border: 'none', boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.3)' }}>
-              Admin Dashboard
-            </Button>
           </div>
         </div>
       </nav>
