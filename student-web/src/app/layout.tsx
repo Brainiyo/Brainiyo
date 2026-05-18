@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 
 import { UserProvider } from "@/contexts/UserContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Brainiyo Student Portal | Master JEE & NEET",
@@ -17,31 +18,33 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <UserProvider>
-          {children}
+        <ThemeProvider>
+          <UserProvider>
+            {children}
 
-          {/* MathJax config — must run before the library loads */}
-          <Script id="mathjax-config" strategy="beforeInteractive">
-            {`
-              window.MathJax = {
-                tex: {
-                  inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                  displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
-                  processEscapes: true
-                },
-                options: {
-                  enableMenu: false
-                }
-              };
-            `}
-          </Script>
+            {/* MathJax config — must run before the library loads */}
+            <Script id="mathjax-config" strategy="beforeInteractive">
+              {`
+                window.MathJax = {
+                  tex: {
+                    inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                    processEscapes: true
+                  },
+                  options: {
+                    enableMenu: false
+                  }
+                };
+              `}
+            </Script>
 
-          {/* MathJax CDN */}
-          <Script
-            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-            strategy="afterInteractive"
-          />
-        </UserProvider>
+            {/* MathJax CDN */}
+            <Script
+              src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+              strategy="afterInteractive"
+            />
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

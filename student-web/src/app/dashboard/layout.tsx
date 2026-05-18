@@ -5,10 +5,13 @@ import { Onboarding } from '@/components/Onboarding';
 import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 import styles from '../Home.module.css';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, loginWithGoogle, logout, streak, updateUser } = useUser();
+  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   if (isAuthenticated === null) return <div className={styles.splash}>B</div>;
@@ -71,8 +74,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className={styles.headerRight}>
+            <button 
+              onClick={toggleTheme}
+              className="p-2 rounded-full mr-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 duration-200 flex items-center justify-center"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {theme === 'light' ? <Moon size={20} className="text-slate-600" /> : <Sun size={20} className="text-amber-400" />}
+            </button>
+
             {user?.xp_points !== undefined && (
-              <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-full text-indigo-600 font-bold text-sm mr-2 border border-indigo-100 dark:border-indigo-800">
+              <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-full text-indigo-600 dark:text-indigo-300 font-bold text-sm mr-2 border border-indigo-100 dark:border-indigo-800/40">
                 <span className="text-lg">⭐</span> {user.xp_points} XP
               </div>
             )}
