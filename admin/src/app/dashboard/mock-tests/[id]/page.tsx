@@ -120,8 +120,8 @@ export default function MockTestDetailPage() {
   };
 
   const downloadTemplate = () => {
-    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation'];
-    const sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'Sample Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution'];
+    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation', 'imageUrl'];
+    const sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'Sample Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution', 'https://example.com/diagram.png'];
     
     const csv = Papa.unparse([headers, sample]);
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -159,6 +159,7 @@ export default function MockTestDetailPage() {
             option_d: row.optionD,
             correct_option: row.correctAnswer,
             explanation_text: row.explanation || '',
+            image_url: row.imageUrl || null,
           }));
 
           const res = await fetch(`${API_BASE_URL}/mock-tests/admin/templates/${testId}/questions/bulk`, {

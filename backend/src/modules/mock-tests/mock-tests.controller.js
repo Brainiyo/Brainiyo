@@ -213,10 +213,10 @@ module.exports = {
         }
 
         const qRes = await client.query(
-          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source)
+          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11)
            RETURNING id`,
-          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard']
+          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard', q.image_url || null]
         );
         
         const questionId = qRes.rows[0].id;
