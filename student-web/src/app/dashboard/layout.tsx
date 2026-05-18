@@ -79,7 +79,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="p-2 rounded-full mr-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 duration-200 flex items-center justify-center"
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
-              {theme === 'light' ? <Moon size={20} className="text-slate-600" /> : <Sun size={20} className="text-amber-400" />}
+              {theme === 'light' ? (
+                <Moon size={20} style={{ color: 'var(--text-secondary)' }} />
+              ) : (
+                <Sun size={20} style={{ color: '#f59e0b' }} />
+              )}
             </button>
 
             {user?.xp_points !== undefined && (
