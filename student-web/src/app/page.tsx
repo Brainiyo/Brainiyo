@@ -97,82 +97,134 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
+              whileHover={{ scale: 1.05, translateY: -4 }}
               style={{
                 position: 'absolute',
-                left: '-40px',
-                top: '25%',
+                left: '-25px',
+                top: '22%',
                 zIndex: 10,
-                background: 'white',
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(12px)',
                 color: '#4f46e5',
                 padding: '10px 18px',
                 borderRadius: '100px',
-                boxShadow: '0 20px 40px -15px rgba(79, 70, 229, 0.2)',
-                border: '1px solid rgba(79, 70, 229, 0.1)',
+                boxShadow: '0 12px 30px -10px rgba(79, 70, 229, 0.35)',
+                border: '1px solid rgba(79, 70, 229, 0.25)',
                 fontSize: '13px',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                cursor: 'default'
               }}
             >
-              <span style={{ color: '#f59e0b' }}>⚡</span> Electrostatics
+              <span style={{ fontSize: '15px' }}>⚡</span> Electrostatics
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
+              whileHover={{ scale: 1.05, translateY: -4 }}
               style={{
                 position: 'absolute',
-                left: '-50px',
-                bottom: '18%',
+                left: '-35px',
+                bottom: '16%',
                 zIndex: 10,
-                background: 'white',
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(12px)',
                 color: '#e11d48',
                 padding: '10px 18px',
                 borderRadius: '100px',
-                boxShadow: '0 20px 40px -15px rgba(225, 29, 72, 0.2)',
-                border: '1px solid rgba(225, 29, 72, 0.1)',
+                boxShadow: '0 12px 30px -10px rgba(225, 29, 72, 0.35)',
+                border: '1px solid rgba(225, 29, 72, 0.25)',
                 fontSize: '13px',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                cursor: 'default'
               }}
             >
-              <span style={{ color: '#10b981' }}>🧪</span> Organic Reactions
+              <span style={{ fontSize: '15px' }}>🧪</span> Organic Reactions
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.0, duration: 0.6 }}
+              whileHover={{ scale: 1.05, translateY: -4 }}
               style={{
                 position: 'absolute',
-                right: '-30px',
-                bottom: '10%',
+                right: '-15px',
+                bottom: '8%',
                 zIndex: 10,
-                background: 'white',
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(12px)',
                 color: '#0d9488',
                 padding: '10px 18px',
                 borderRadius: '100px',
-                boxShadow: '0 20px 40px -15px rgba(13, 148, 136, 0.2)',
-                border: '1px solid rgba(13, 148, 136, 0.1)',
+                boxShadow: '0 12px 30px -10px rgba(13, 148, 136, 0.35)',
+                border: '1px solid rgba(13, 148, 136, 0.25)',
                 fontSize: '13px',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                cursor: 'default'
               }}
             >
-              <span style={{ color: '#ec4899' }}>🧬</span> Molecular Genetics
+              <span style={{ fontSize: '15px' }}>🧬</span> Molecular Genetics
             </motion.div>
 
-            {/* Visual Phone Mockup - Functional Version */}
-            <div style={{ position: 'relative', width: '330px', margin: '0 auto', filter: 'drop-shadow(0 25px 50px rgba(15, 23, 42, 0.15))' }}>
-              <div style={{ background: '#0f172a', borderRadius: '48px', border: '12px solid #1e293b', padding: '24px 20px', height: '600px', color: 'white', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ width: '70px', height: '5px', background: '#e2e8f0', borderRadius: '10px', margin: '0 auto 24px' }}></div>
-                
+            {/* Premium Neon Glow behind phone */}
+            <div style={{
+              position: 'absolute',
+              top: '12%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '260px',
+              height: '490px',
+              background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.4) 0%, rgba(236, 72, 153, 0.4) 100%)',
+              borderRadius: '60px',
+              filter: 'blur(55px)',
+              opacity: 0.65,
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}></div>
+
+            {/* Visual Phone Mockup - Bezel-less Ultra Premium Version */}
+            <div 
+              style={{ 
+                position: 'relative', 
+                width: '320px', 
+                margin: '0 auto', 
+                zIndex: 2,
+                transform: 'perspective(1000px) rotateY(-8deg) rotateX(4deg)',
+                transition: 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(-8px)';
+                e.currentTarget.style.filter = 'drop-shadow(0 30px 60px rgba(79, 70, 229, 0.25))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'perspective(1000px) rotateY(-8deg) rotateX(4deg)';
+                e.currentTarget.style.filter = 'none';
+              }}
+            >
+              <div style={{ 
+                background: 'linear-gradient(to bottom, #090d16, #111827)', 
+                borderRadius: '48px', 
+                border: '9px solid rgba(30, 41, 59, 0.95)', 
+                outline: '1px solid rgba(255,255,255,0.08)',
+                padding: '38px 16px 20px', 
+                height: '610px', 
+                color: 'white', 
+                display: 'flex', 
+                flexDirection: 'column',
+                boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.05)'
+              }}>
                 <InteractivePhoneContent />
               </div>
             </div>
@@ -309,20 +361,53 @@ function InteractivePhoneContent() {
   };
 
   return (
-    <>
-      <motion.div 
-        animate={{ opacity: [0.5, 1, 0.5] }} 
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        style={{ fontSize: '11px', fontWeight: 800, color: '#818cf8', marginBottom: '16px', letterSpacing: '1px' }}
-      >
-        PRACTICE • CHEMISTRY
-      </motion.div>
-      <div style={{ background: 'white', color: '#0f172a', padding: '24px', borderRadius: '28px', flex: 1, display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
-        <h3 style={{ fontWeight: 800, fontSize: '16px', lineHeight: 1.5, marginBottom: '24px', color: '#1e293b' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', color: '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Dynamic Island */}
+      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width: '90px', height: '24px', background: '#000', borderRadius: '20px', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '8px', height: '8px', background: '#1e293b', borderRadius: '50%', marginRight: '6px' }}></div>
+        <div style={{ width: '4px', height: '4px', background: '#1e293b', borderRadius: '50%' }}></div>
+      </div>
+
+      {/* Simulated Device Status Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 12px 16px', fontSize: '11px', fontWeight: 600, color: '#94a3b8' }}>
+        <span>9:41</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {/* Cell Signal */}
+          <span style={{ display: 'inline-flex', gap: '1.5px', alignItems: 'flex-end', height: '9px' }}>
+            <span style={{ width: '2px', height: '3px', background: '#94a3b8', borderRadius: '0.5px' }}></span>
+            <span style={{ width: '2px', height: '5px', background: '#94a3b8', borderRadius: '0.5px' }}></span>
+            <span style={{ width: '2px', height: '7px', background: '#cbd5e1', borderRadius: '0.5px' }}></span>
+            <span style={{ width: '2px', height: '9px', background: '#cbd5e1', borderRadius: '0.5px' }}></span>
+          </span>
+          {/* Wi-Fi Icon */}
+          <span style={{ fontSize: '10px' }}>📶</span>
+          {/* Battery Icon */}
+          <span style={{ display: 'inline-flex', width: '20px', height: '10px', border: '1px solid #94a3b8', borderRadius: '3px', padding: '1px', alignItems: 'center', position: 'relative' }}>
+            <span style={{ display: 'block', height: '100%', width: '75%', background: '#10b981', borderRadius: '1.5px' }}></span>
+            <span style={{ position: 'absolute', right: '-3px', width: '2px', height: '4px', background: '#94a3b8', borderTopRightRadius: '1px', borderBottomRightRadius: '1px' }}></span>
+          </span>
+        </div>
+      </div>
+
+      {/* Course & Chapter Progress */}
+      <div style={{ padding: '0 8px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 800, color: '#818cf8', letterSpacing: '1px', textTransform: 'uppercase' }}>Practice • Chemistry</span>
+          <span style={{ fontSize: '10px', fontWeight: 700, color: '#64748b' }}>Q. 4 of 15</span>
+        </div>
+        {/* Progress Bar */}
+        <div style={{ width: '100%', height: '4px', background: '#1e293b', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ width: '30%', height: '100%', background: 'linear-gradient(to right, #4f46e5, #818cf8)', borderRadius: '2px' }}></div>
+        </div>
+      </div>
+
+      {/* Screen App Container */}
+      <div style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', padding: '20px', borderRadius: '28px', flex: 1, display: 'flex', flexDirection: 'column', border: '1px solid rgba(255,255,255,0.06)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.05)' }}>
+        <h3 style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.5, marginBottom: '20px', color: '#f1f5f9' }}>
           What is the pH of 10⁻⁸ M HCl aqueous solution at 298K?
         </h3>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {options.map((opt, index) => {
             const isSelected = selected === opt.id;
             const isCorrect = revealed && opt.correct;
@@ -331,62 +416,86 @@ function InteractivePhoneContent() {
             return (
               <motion.button
                 key={opt.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={
                   isWrong 
                     ? { x: [-5, 5, -5, 5, 0], opacity: 1, y: 0 } 
                     : isCorrect 
-                    ? { scale: [1, 1.05, 1], opacity: 1, y: 0 } 
+                    ? { scale: [1, 1.03, 1], opacity: 1, y: 0 } 
                     : { opacity: 1, y: 0 }
                 }
                 transition={{ 
-                  delay: revealed ? 0 : index * 0.1, 
-                  duration: 0.4 
+                  delay: revealed ? 0 : index * 0.08, 
+                  duration: 0.35 
                 }}
-                whileHover={!revealed ? { scale: 1.02, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' } : {}}
-                whileTap={!revealed ? { scale: 0.98 } : {}}
+                whileHover={!revealed ? { scale: 1.015, backgroundColor: 'rgba(255,255,255,0.06)' } : {}}
+                whileTap={!revealed ? { scale: 0.985 } : {}}
                 onClick={() => handleSelect(opt.id)}
                 style={{
                   width: '100%',
                   textAlign: 'left',
-                  padding: '14px 16px',
-                  borderRadius: '16px',
-                  fontSize: '14px',
+                  padding: '12px 14px',
+                  borderRadius: '14px',
+                  fontSize: '13px',
                   fontWeight: 600,
-                  transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
+                  transition: 'all 0.25s ease',
                   border: isCorrect 
-                    ? '2px solid #22c55e' 
+                    ? '1px solid #10b981' 
                     : isWrong 
-                    ? '2px solid #ef4444' 
+                    ? '1px solid #f43f5e' 
                     : isSelected 
-                    ? '2px solid #6366f1'
-                    : '2px solid #f1f5f9',
+                    ? '1px solid #6366f1'
+                    : '1px solid rgba(255,255,255,0.08)',
                   background: isCorrect 
-                    ? '#dcfce7' 
+                    ? 'rgba(16, 185, 129, 0.15)' 
                     : isWrong 
-                    ? '#fee2e2' 
+                    ? 'rgba(244, 63, 94, 0.15)' 
                     : isSelected 
-                    ? '#e0e7ff' 
-                    : '#f8fafc',
+                    ? 'rgba(99, 102, 241, 0.15)' 
+                    : 'rgba(255,255,255,0.03)',
                   color: isCorrect 
-                    ? '#166534' 
+                    ? '#34d399' 
                     : isWrong 
-                    ? '#991b1b' 
-                    : '#334155',
+                    ? '#f87171' 
+                    : isSelected 
+                    ? '#a5b4fc' 
+                    : '#cbd5e1',
                   cursor: revealed ? 'default' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between'
                 }}
               >
-                <span>
-                  <span style={{ opacity: 0.7, marginRight: '8px' }}>{opt.id})</span> {opt.text}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ 
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    background: isCorrect 
+                      ? '#10b981' 
+                      : isWrong 
+                      ? '#f43f5e' 
+                      : isSelected 
+                      ? '#6366f1'
+                      : 'rgba(255,255,255,0.05)',
+                    color: isCorrect || isWrong || isSelected ? 'white' : '#94a3b8',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                  }}>
+                    {opt.id}
+                  </span>
+                  <span>{opt.text}</span>
                 </span>
+                
                 {isCorrect && (
                   <motion.span 
                     initial={{ scale: 0 }} 
                     animate={{ scale: 1 }} 
-                    style={{ fontSize: '12px', background: '#22c55e', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}
+                    style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '2px 8px', borderRadius: '8px', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)' }}
                   >
                     Correct
                   </motion.span>
@@ -395,7 +504,7 @@ function InteractivePhoneContent() {
                   <motion.span 
                     initial={{ scale: 0 }} 
                     animate={{ scale: 1 }} 
-                    style={{ fontSize: '12px', background: '#ef4444', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}
+                    style={{ fontSize: '10px', background: 'rgba(244, 63, 94, 0.2)', color: '#f87171', padding: '2px 8px', borderRadius: '8px', fontWeight: 700, border: '1px solid rgba(244, 63, 94, 0.3)' }}
                   >
                     Incorrect
                   </motion.span>
@@ -409,32 +518,32 @@ function InteractivePhoneContent() {
           {revealed && (
             <motion.div 
               initial={{ opacity: 0, height: 0, marginTop: 0 }}
-              animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+              animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
               exit={{ opacity: 0, height: 0, marginTop: 0 }}
-              transition={{ duration: 0.4, type: "spring", bounce: 0.4 }}
+              transition={{ duration: 0.3 }}
               style={{ overflow: 'hidden' }}
             >
-              <div style={{ fontSize: '13px', color: '#475569', background: '#f8fafc', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', lineHeight: 1.6 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '16px' }}>💡</span>
-                  <strong style={{ color: '#0f172a' }}>Concept Note</strong>
+              <div style={{ fontSize: '12px', color: '#cbd5e1', background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', lineHeight: 1.5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '14px' }}>💡</span>
+                  <strong style={{ color: '#f1f5f9' }}>Concept Note</strong>
                 </div>
                 At high dilution (10⁻⁸ M), the H⁺ from water (10⁻⁷ M) cannot be ignored. Total [H⁺] ≈ 1.05 × 10⁻⁷ M, giving pH ≈ 6.98.
                 
                 <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { setSelected(null); setRevealed(false); }}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', marginTop: '16px', color: 'white', fontWeight: 700, background: '#4f46e5', border: 'none', padding: '12px', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', marginTop: '12px', color: 'white', fontWeight: 700, background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer', fontSize: '11px', boxShadow: '0 4px 14px rgba(79, 70, 229, 0.3)' }}
                 >
-                  <span>↺</span> Try Again
+                  <span>↺</span> Try Another Question
                 </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    </>
+    </div>
   );
 }
 
