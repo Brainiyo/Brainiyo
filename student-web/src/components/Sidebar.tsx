@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const navItems = [
   { id: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
@@ -24,7 +25,7 @@ export const Sidebar = ({ activeTab, onLogout, user }: { activeTab: string, onTa
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <div className={styles.logoIcon}>B</div>
+        <Image src="/logo-icon.png" alt="Brainiyo" width={40} height={40} style={{ objectFit: 'contain' }} />
         <span className={styles.logoText}>Brainiyo</span>
       </div>
 
