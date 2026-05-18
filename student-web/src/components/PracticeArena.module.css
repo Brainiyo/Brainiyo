@@ -64,7 +64,7 @@
   justify-content: center;
   text-align: center;
   padding: 80px 20px;
-  background: white;
+  background: var(--card);
   border-radius: 32px;
   max-width: 600px;
   margin: 0 auto;

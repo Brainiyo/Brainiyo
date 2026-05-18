@@ -9,7 +9,7 @@
 
 .examHeader {
   height: 64px;
-  background: white;
+  background: var(--card);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -120,7 +120,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
-  background: white;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -181,7 +181,7 @@
 
 .sidebar {
   width: 320px;
-  background: white;
+  background: var(--card);
   border-left: 1px solid var(--border);
   padding: 24px;
   display: flex;
