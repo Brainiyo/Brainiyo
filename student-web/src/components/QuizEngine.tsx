@@ -5,6 +5,7 @@ import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Card } from './Card';
 import { Button } from './Button';
+import { useUser } from '@/contexts/UserContext';
 import styles from './PracticeArena.module.css'; // Reusing styles
 
 interface QuizEngineProps {
@@ -14,6 +15,7 @@ interface QuizEngineProps {
 }
 
 export function QuizEngine({ topicId, count, onComplete }: QuizEngineProps) {
+  const { refreshUser } = useUser();
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<any[]>([]);
@@ -61,6 +63,13 @@ export function QuizEngine({ topicId, count, onComplete }: QuizEngineProps) {
       setFeedback(res.data);
       setRevealed(true);
       setAnswers(prev => [...prev, { ...res.data, questionId: question.id }]);
+      
+      // Refresh user details to sync XP points on the header
+      try {
+        await refreshUser();
+      } catch (err) {
+        console.error('Failed to sync XP points:', err);
+      }
       
       setTimeout(() => {
         if (window.MathJax?.typeset) window.MathJax.typeset();

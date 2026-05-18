@@ -27,7 +27,7 @@ const verifyToken = async (req, res, next) => {
        ON CONFLICT (firebase_uid) DO UPDATE
          SET email      = COALESCE(EXCLUDED.email, users.email),
              last_login = NOW()
-       RETURNING id, firebase_uid, name, email, phone, class, target_exam, is_onboarded, created_at`,
+       RETURNING id, firebase_uid, name, email, phone, class, target_exam, is_onboarded, created_at, xp_points`,
       [uid, name || 'Student', email || null, phone_number || null]
     );
 
@@ -76,7 +76,7 @@ const updateMe = async (req, res, next) => {
            target_exam  = COALESCE($3, target_exam),
            is_onboarded = TRUE
        WHERE id = $4
-       RETURNING id, name, email, phone, class, target_exam, is_onboarded`,
+       RETURNING id, name, email, phone, class, target_exam, is_onboarded, xp_points`,
       [name || null, studentClass || null, target_exam || null, req.user.id]
     );
 

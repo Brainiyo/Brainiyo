@@ -1,14 +1,39 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { useUser } from '@/contexts/UserContext';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
 import styles from '../Home.module.css';
 
 export default function DashboardOverview() {
   const { dueRevision } = useUser();
   const router = useRouter();
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const res = await api.getDashboard();
+        if (res.success) {
+          setStats(res.data);
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
+  const avgAccuracy = stats && stats.total_attempted > 0
+    ? `${Math.round(stats.overall_accuracy)}%`
+    : '0%';
+  const totalSolved = stats ? stats.total_attempted : 0;
 
   return (
     <motion.div 
@@ -43,14 +68,14 @@ export default function DashboardOverview() {
         <Card className={styles.statCard}>
           <span className={styles.statIcon}>🎯</span>
           <div className={styles.statData}>
-            <span className={styles.statVal}>84%</span>
+            <span className={styles.statVal}>{loading ? '...' : avgAccuracy}</span>
             <span className={styles.statLabel}>Avg Accuracy</span>
           </div>
         </Card>
         <Card className={styles.statCard}>
           <span className={styles.statIcon}>⚡</span>
           <div className={styles.statData}>
-            <span className={styles.statVal}>120</span>
+            <span className={styles.statVal}>{loading ? '...' : totalSolved}</span>
             <span className={styles.statLabel}>Total Solved</span>
           </div>
         </Card>

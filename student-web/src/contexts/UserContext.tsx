@@ -12,6 +12,7 @@ interface UserContextType {
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: any) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -86,8 +87,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(userData);
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await api.getMe();
+      if (res?.data) {
+        setUser(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to refresh user details', err);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, isAuthenticated, streak, dueRevision, loginWithGoogle, logout, updateUser }}>
+    <UserContext.Provider value={{ user, isAuthenticated, streak, dueRevision, loginWithGoogle, logout, updateUser, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

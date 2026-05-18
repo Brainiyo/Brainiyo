@@ -73,6 +73,13 @@ const questionsController = {
         [userId, questionId, selectedOption, isCorrect, timeTakenSeconds]
       );
 
+      // Award XP points: +10 XP if correct, +2 XP if incorrect to reward efforts
+      const xpGained = isCorrect ? 10 : 2;
+      await client.query(
+        `UPDATE users SET xp_points = xp_points + $1 WHERE id = $2`,
+        [xpGained, userId]
+      );
+
       // 3. Update Spaced Repetition Queue
       // Get existing SR state
       const srRes = await client.query(

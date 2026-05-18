@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { Button } from './Button';
+import { useUser } from '@/contexts/UserContext';
 import styles from './RevisionDeck.module.css';
 
 export const RevisionDeck = () => {
+  const { refreshUser } = useUser();
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,13 @@ export const RevisionDeck = () => {
       });
       setResult(res.data);
       setShowResult(true);
+
+      // Refresh user details to sync XP points on the header
+      try {
+        await refreshUser();
+      } catch (err) {
+        console.error('Failed to sync XP points:', err);
+      }
     } catch (err) {
       console.error(err);
     } finally {
