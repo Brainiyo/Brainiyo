@@ -36,6 +36,7 @@ router.patch('/chapters/:id',      ctrl.updateChapter);
 router.delete('/chapters/:id',     ctrl.deleteChapter);
 
 router.post('/topics',             ctrl.createTopic);
+router.patch('/topics/:id',        ctrl.updateTopic);
 router.delete('/topics/:id',       ctrl.deleteTopic);
 
 module.exports = router;

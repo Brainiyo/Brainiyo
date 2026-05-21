@@ -2,6 +2,21 @@ const { query } = require('../../config/db');
 const redis     = require('../../config/redis');
 const { CACHE } = require('../../config/constants');
 
+const clearCurriculumCache = async () => {
+  try {
+    if (redis.status === 'ready') {
+      const keys = await redis.keys('subjects:*');
+      const keys2 = await redis.keys('chapters:*');
+      const allKeys = [...keys, ...keys2];
+      for (const key of allKeys) {
+        await redis.del(key);
+      }
+    }
+  } catch (err) {
+    // Ignore cache clearing errors
+  }
+};
+
 const controller = {
   /* ──────────────────────────────────────────────────────────────────────
      GET /api/content/subjects?exam=NEET|JEE
@@ -101,6 +116,7 @@ const controller = {
         `INSERT INTO subjects (name, exam_type, icon_url) VALUES ($1, $2, $3) RETURNING *`,
         [name, exam_type, icon_url]
       );
+      await clearCurriculumCache();
       res.status(201).json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
   },
@@ -113,6 +129,7 @@ const controller = {
         `UPDATE subjects SET name = $1, exam_type = $2, icon_url = $3 WHERE id = $4 RETURNING *`,
         [name, exam_type, icon_url, id]
       );
+      await clearCurriculumCache();
       res.json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
   },
@@ -121,6 +138,7 @@ const controller = {
     try {
       const { id } = req.params;
       await query('DELETE FROM subjects WHERE id = $1', [id]);
+      await clearCurriculumCache();
       res.json({ success: true, message: 'Subject deleted' });
     } catch (err) { next(err); }
   },
@@ -132,6 +150,7 @@ const controller = {
         `INSERT INTO chapters (subject_id, name, order_index, class_level) VALUES ($1, $2, $3, $4) RETURNING *`,
         [subject_id, name, order_index, class_level]
       );
+      await clearCurriculumCache();
       res.status(201).json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
   },
@@ -144,6 +163,7 @@ const controller = {
         `UPDATE chapters SET name = $1, order_index = $2, class_level = $3 WHERE id = $4 RETURNING *`,
         [name, order_index, class_level, id]
       );
+      await clearCurriculumCache();
       res.json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
   },
@@ -152,6 +172,7 @@ const controller = {
     try {
       const { id } = req.params;
       await query('DELETE FROM chapters WHERE id = $1', [id]);
+      await clearCurriculumCache();
       res.json({ success: true, message: 'Chapter deleted' });
     } catch (err) { next(err); }
   },
@@ -163,7 +184,21 @@ const controller = {
         `INSERT INTO topics (chapter_id, name) VALUES ($1, $2) RETURNING *`,
         [chapter_id, name]
       );
+      await clearCurriculumCache();
       res.status(201).json({ success: true, data: rows[0] });
+    } catch (err) { next(err); }
+  },
+
+  updateTopic: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { name } = req.body;
+      const { rows } = await query(
+        `UPDATE topics SET name = $1 WHERE id = $2 RETURNING *`,
+        [name, id]
+      );
+      await clearCurriculumCache();
+      res.json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
   },
 
@@ -171,6 +206,7 @@ const controller = {
     try {
       const { id } = req.params;
       await query('DELETE FROM topics WHERE id = $1', [id]);
+      await clearCurriculumCache();
       res.json({ success: true, message: 'Topic deleted' });
     } catch (err) { next(err); }
   },

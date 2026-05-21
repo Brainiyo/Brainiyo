@@ -34,10 +34,19 @@ export default function CurriculumPage() {
   const [showAddChapter, setShowAddChapter] = useState<string | null>(null); // subjectId
   const [showAddTopic, setShowAddTopic] = useState<string | null>(null);     // chapterId
 
+  const [showEditSubject, setShowEditSubject] = useState<any | null>(null);   // subject object
+  const [showEditChapter, setShowEditChapter] = useState<any | null>(null);   // chapter object
+  const [showEditTopic, setShowEditTopic] = useState<any | null>(null);       // topic object
+
   // Form states
   const [newSubject, setNewSubject] = useState({ name: '', exam_type: 'BOTH' });
   const [newChapter, setNewChapter] = useState({ name: '', class_level: 11, order_index: 0 });
   const [newTopic, setNewTopic] = useState({ name: '' });
+
+  const [editSubject, setEditSubject] = useState({ name: '', exam_type: 'BOTH' });
+  const [editChapter, setEditChapter] = useState({ name: '', class_level: 11, order_index: 0 });
+  const [editTopic, setEditTopic] = useState({ name: '' });
+
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -174,6 +183,74 @@ export default function CurriculumPage() {
     } catch (err) { toast.error('Failed to delete'); }
   };
 
+  // ─── Edit Handlers ─────────────────────────────────────────────
+  const handleEditSubject = async () => {
+    if (!editSubject.name.trim() || !showEditSubject) { toast.error('Subject name is required'); return; }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/curriculum/subjects/${showEditSubject.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+        body: JSON.stringify({ name: editSubject.name.trim(), exam_type: editSubject.exam_type })
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Failed to update subject');
+      toast.success(`Subject updated!`);
+      setShowEditSubject(null);
+      fetchCurriculum();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update subject');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditChapter = async () => {
+    if (!editChapter.name.trim() || !showEditChapter) { toast.error('Chapter name is required'); return; }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/curriculum/chapters/${showEditChapter.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          name: editChapter.name.trim(),
+          class_level: editChapter.class_level,
+          order_index: editChapter.order_index
+        })
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Failed to update chapter');
+      toast.success(`Chapter updated!`);
+      setShowEditChapter(null);
+      fetchCurriculum();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update chapter');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditTopic = async () => {
+    if (!editTopic.name.trim() || !showEditTopic) { toast.error('Topic name is required'); return; }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/curriculum/topics/${showEditTopic.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+        body: JSON.stringify({ name: editTopic.name.trim() })
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Failed to update topic');
+      toast.success(`Topic updated!`);
+      setShowEditTopic(null);
+      fetchCurriculum();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update topic');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const toggleSubject = (id: string) => {
     setExpandedSubjects(prev =>
       prev.includes(id) ? prev.filter(sid => sid !== id) : [...prev, id]
@@ -254,6 +331,16 @@ export default function CurriculumPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowEditSubject(subject);
+                    setEditSubject({ name: subject.name, exam_type: subject.exam_type || 'BOTH' });
+                  }}
+                >
+                  <Edit size={16} />
+                </button>
                 <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" onClick={(e) => { e.stopPropagation(); handleDeleteSubject(String(subject.id), subject.name); }}><Trash2 size={16} /></button>
                 <div className="p-2 text-slate-400">
                   {expandedSubjects.includes(String(subject.id)) ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
@@ -293,6 +380,20 @@ export default function CurriculumPage() {
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-bold text-slate-500">{chapter.topics?.length || 0} Topics</span>
                           </div>
                           <div className="flex items-center gap-2">
+                            <button
+                              className="p-1.5 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-md transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowEditChapter(chapter);
+                                setEditChapter({
+                                  name: chapter.name,
+                                  class_level: chapter.class_level || 11,
+                                  order_index: chapter.order_index || 0
+                                });
+                              }}
+                            >
+                              <Edit size={14} />
+                            </button>
                             <button className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors" onClick={(e) => { e.stopPropagation(); handleDeleteChapter(String(chapter.id)); }}><Trash2 size={14} /></button>
                             <div className="text-slate-400">
                               {expandedChapters.includes(String(chapter.id)) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -318,7 +419,18 @@ export default function CurriculumPage() {
                                       <Target size={14} className="text-indigo-400 shrink-0" />
                                       <span className="text-xs font-medium truncate" title={topic.name}>{topic.name}</span>
                                     </div>
-                                    <button onClick={() => handleDeleteTopic(String(topic.id))} className="p-1 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"><Trash2 size={14} /></button>
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                      <button
+                                        onClick={() => {
+                                          setShowEditTopic(topic);
+                                          setEditTopic({ name: topic.name });
+                                        }}
+                                        className="p-1 text-slate-400 hover:text-indigo-500 rounded transition-colors"
+                                      >
+                                        <Edit size={14} />
+                                      </button>
+                                      <button onClick={() => handleDeleteTopic(String(topic.id))} className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors"><Trash2 size={14} /></button>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -447,6 +559,122 @@ export default function CurriculumPage() {
           <div className="flex gap-3 pt-2">
             <Button variant="outline" className="flex-1" onClick={() => setShowAddTopic(null)}>Cancel</Button>
             <Button className="flex-1" onClick={handleAddTopic} loading={submitting}>Add Topic</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ─── Edit Subject Modal ──────────────────────────────────── */}
+      <Modal open={!!showEditSubject} onClose={() => setShowEditSubject(null)} title="Edit Subject">
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold mb-1.5 block text-slate-700 dark:text-slate-300">Subject Name</label>
+            <input
+              type="text"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="e.g. Physics, Chemistry, Biology, Mathematics"
+              value={editSubject.name}
+              onChange={e => setEditSubject({ ...editSubject, name: e.target.value })}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="text-sm font-bold mb-2 block text-slate-700 dark:text-slate-300">Exam Type</label>
+            <div className="flex gap-2">
+              {['NEET', 'JEE', 'BOTH'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => setEditSubject({ ...editSubject, exam_type: type })}
+                  className={cn(
+                    "flex-1 py-2.5 rounded-xl text-sm font-bold border-2 transition-all",
+                    editSubject.exam_type === type
+                      ? type === 'NEET' ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-600"
+                        : type === 'JEE' ? "border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-600"
+                        : "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-600"
+                      : "border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300"
+                  )}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1.5">BOTH = visible to both NEET and JEE students</p>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowEditSubject(null)}>Cancel</Button>
+            <Button className="flex-1" onClick={handleEditSubject} loading={submitting}>Save Changes</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ─── Edit Chapter Modal ─────────────────────────────────── */}
+      <Modal open={!!showEditChapter} onClose={() => setShowEditChapter(null)} title="Edit Chapter">
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold mb-1.5 block text-slate-700 dark:text-slate-300">Chapter Name</label>
+            <input
+              type="text"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="e.g. Kinematics, Organic Chemistry"
+              value={editChapter.name}
+              onChange={e => setEditChapter({ ...editChapter, name: e.target.value })}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="text-sm font-bold mb-2 block text-slate-700 dark:text-slate-300">Class Level</label>
+            <div className="flex gap-2">
+              {[{ value: 11, label: 'Class 11' }, { value: 12, label: 'Class 12' }].map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setEditChapter({ ...editChapter, class_level: opt.value })}
+                  className={cn(
+                    "flex-1 py-2.5 rounded-xl text-sm font-bold border-2 transition-all",
+                    editChapter.class_level === opt.value
+                      ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-600"
+                      : "border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-bold mb-1.5 block text-slate-700 dark:text-slate-300">Order Index</label>
+            <input
+              type="number"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="0"
+              value={editChapter.order_index}
+              onChange={e => setEditChapter({ ...editChapter, order_index: parseInt(e.target.value) || 0 })}
+            />
+            <p className="text-[11px] text-slate-400 mt-1">Controls display order. Lower = shown first.</p>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowEditChapter(null)}>Cancel</Button>
+            <Button className="flex-1" onClick={handleEditChapter} loading={submitting}>Save Changes</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ─── Edit Topic Modal ───────────────────────────────────── */}
+      <Modal open={!!showEditTopic} onClose={() => setShowEditTopic(null)} title="Edit Topic">
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold mb-1.5 block text-slate-700 dark:text-slate-300">Topic Name</label>
+            <input
+              type="text"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="e.g. Newton's Laws, Thermodynamics"
+              value={editTopic.name}
+              onChange={e => setEditTopic({ name: e.target.value })}
+              autoFocus
+              onKeyDown={e => e.key === 'Enter' && handleEditTopic()}
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowEditTopic(null)}>Cancel</Button>
+            <Button className="flex-1" onClick={handleEditTopic} loading={submitting}>Save Changes</Button>
           </div>
         </div>
       </Modal>
