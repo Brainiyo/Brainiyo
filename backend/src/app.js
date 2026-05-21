@@ -47,7 +47,11 @@ const defaultOrigins = [
   'http://localhost:5173',
   'https://brainiyo-student.vercel.app',
   'https://brainiyo-admin.vercel.app',
-  'https://brainiyo.vercel.app'
+  'https://brainiyo.vercel.app',
+  'https://brainiyo.in',
+  'https://www.brainiyo.in',
+  'https://admin.brainiyo.in',
+  'https://student.brainiyo.in'
 ];
 
 const allowedOrigins = [

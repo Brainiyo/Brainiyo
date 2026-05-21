@@ -36,7 +36,7 @@ export default function LandingPage() {
             <a href="#faqs" className={styles.navLink}>FAQs</a>
           </div>
           <div className={styles.navActions}>
-            <Button variant="outline" size="sm" onClick={() => window.location.href = 'https://brainiyo-student.vercel.app/dashboard'} style={{ borderRadius: '100px', borderColor: '#4f46e5', color: '#4f46e5', fontWeight: 700, padding: '8px 20px' }}>
+            <Button variant="outline" size="sm" onClick={() => window.location.href = portalUrl} style={{ borderRadius: '100px', borderColor: '#4f46e5', color: '#4f46e5', fontWeight: 700, padding: '8px 20px' }}>
               Practice Portal
             </Button>
           </div>

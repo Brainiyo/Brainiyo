@@ -1,14 +1,13 @@
-const { qualityScore, applySM2 } = require('../../src/utils/sm2');
+const { getQualityScore: qualityScore, applySM2 } = require('../../src/modules/spaced-repetition/sm2');
 
 describe('SM-2 Utility', () => {
 
   describe('qualityScore()', () => {
-    test('correct + very fast (<20s) → 5', () => expect(qualityScore(true, 15)).toBe(5));
-    test('correct + normal (≥20s) → 4',     () => expect(qualityScore(true, 40)).toBe(4));
-    test('wrong + slow (>90s) → 1',         () => expect(qualityScore(false, 100)).toBe(1));
-    test('wrong + moderate (60–90s) → 2',   () => expect(qualityScore(false, 70)).toBe(2));
-    test('wrong + quick (30–60s) → 3',      () => expect(qualityScore(false, 45)).toBe(3));
-    test('skip (≤30s) → 0',                 () => expect(qualityScore(false, 10)).toBe(0));
+    test('correct + very fast (<30s) → 5', () => expect(qualityScore(true, 15)).toBe(5));
+    test('correct + normal (<90s) → 4',     () => expect(qualityScore(true, 40)).toBe(4));
+    test('correct + slow (≥90s) → 3',       () => expect(qualityScore(true, 100)).toBe(3));
+    test('wrong + slow (>60s) → 1',         () => expect(qualityScore(false, 70)).toBe(1));
+    test('wrong + quick (≤60s) → 0',        () => expect(qualityScore(false, 40)).toBe(0));
   });
 
   describe('applySM2()', () => {
