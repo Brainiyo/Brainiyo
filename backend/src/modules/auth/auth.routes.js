@@ -12,7 +12,7 @@ const verifySchema = { body: z.object({ idToken: z.string().min(1) }) };
 const updateSchema = {
   body: z.object({
     name:        z.string().min(2).max(100).optional(),
-    class:       z.union([z.literal(11), z.literal(12)]).optional(),
+    class:       z.union([z.literal(11), z.literal(12), z.literal(13)]).optional(),
     target_exam: z.enum(['NEET', 'JEE']).optional(),
   }),
 };

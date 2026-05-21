@@ -58,7 +58,7 @@ const controller = {
       const cached   = await redis.get(cacheKey);
       if (cached) return res.json({ success: true, data: JSON.parse(cached), fromCache: true });
 
-      const classFilter = (userClass === 12 || userClass === 13) ? [11, 12] : [userClass];
+      const classFilter = (userClass === 13) ? [11, 12] : [userClass];
 
       const { rows } = await query(
         `SELECT
@@ -216,7 +216,7 @@ const controller = {
       const userId = req.user.id;
       const userClass = req.user.class || 11;
       // Dropper (class=13) sees both Class 11 and 12 content
-      const classFilter = (userClass === 12 || userClass === 13) ? [11, 12] : [userClass];
+      const classFilter = (userClass === 13) ? [11, 12] : [userClass];
 
       const { rows } = await query(
         `SELECT 

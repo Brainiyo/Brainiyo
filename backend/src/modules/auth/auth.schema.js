@@ -21,7 +21,7 @@ const registerSchema = {
     name: Joi.string().min(2).max(100).required(),
     phone: phoneSchema,
     email: Joi.string().email().optional().allow('', null),
-    class: Joi.number().valid(11, 12).required(),
+    class: Joi.number().valid(11, 12, 13).required(),
     target_exam: Joi.string().valid('NEET', 'JEE').required(),
     password: Joi.string().min(6).max(100).required(),
   }),
