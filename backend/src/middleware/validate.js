@@ -1,5 +1,4 @@
 const { z } = require('zod');
-const { AppError } = require('./errorHandler');
 
 /**
  * Zod validation middleware factory.

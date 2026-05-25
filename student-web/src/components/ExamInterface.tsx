@@ -20,6 +20,7 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [showPalette, setShowPalette] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -98,6 +99,13 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
               {formatTime(timeLeft)}
             </strong>
           </div>
+          <button 
+            className={styles.paletteToggle} 
+            onClick={() => setShowPalette(!showPalette)}
+            aria-label="Toggle question palette"
+          >
+            📋 Palette
+          </button>
           <Button variant="danger" size="sm" onClick={handleFinish}>Submit Exam</Button>
         </div>
       </header>
@@ -165,7 +173,11 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
           </div>
         </div>
 
-        <aside className={styles.sidebar}>
+        {showPalette && (
+          <div className={styles.paletteBackdrop} onClick={() => setShowPalette(false)} />
+        )}
+
+        <aside className={`${styles.sidebar} ${showPalette ? styles.sidebarOpen : ''}`}>
           <div className={styles.candidateInfo}>
             <div className={styles.avatar}>D</div>
             <div>
@@ -193,7 +205,10 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
                   <button 
                     key={idx} 
                     className={`${styles.pCell} ${stateClass}`}
-                    onClick={() => setCurrentIdx(idx)}
+                    onClick={() => {
+                      setCurrentIdx(idx);
+                      setShowPalette(false);
+                    }}
                   >
                     {idx + 1}
                   </button>

@@ -12,7 +12,7 @@ const clearCurriculumCache = async () => {
         await redis.del(key);
       }
     }
-  } catch (err) {
+  } catch {
     // Ignore cache clearing errors
   }
 };

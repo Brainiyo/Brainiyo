@@ -181,3 +181,73 @@
   color: var(--text-muted);
   font-weight: 700;
 }
+
+@media (max-width: 768px) {
+  .topThree {
+    gap: 8px;
+    margin: 24px 0;
+    height: 200px;
+  }
+
+  .podium {
+    width: 96px;
+  }
+
+  .podiumRank {
+    top: -12px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .podiumAvatar {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    border-width: 3px;
+    margin-bottom: 8px;
+  }
+
+  .podiumBar {
+    padding-top: 12px;
+  }
+
+  .bar1 { height: 110px; }
+  .bar2 { height: 80px; }
+  .bar3 { height: 60px; }
+
+  .podiumName {
+    font-size: 12px;
+  }
+
+  .podiumXp {
+    font-size: 11px;
+  }
+
+  .listContainer {
+    border-radius: 16px;
+  }
+
+  .listItem {
+    grid-template-columns: 40px 1fr 80px;
+    padding: 12px 16px;
+  }
+
+  .itemRank {
+    font-size: 15px;
+  }
+
+  .itemName {
+    font-size: 14px;
+  }
+
+  .itemAvatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .itemXp {
+    font-size: 14px;
+  }
+}

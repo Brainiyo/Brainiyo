@@ -120,7 +120,7 @@ export function QuizEngine({ topicId, count, onComplete }: QuizEngineProps) {
       </div>
 
       <Card className={styles.questionCard}>
-        <div className="flex justify-between items-start mb-4">
+        <div className={styles.questionHeader}>
           <div className={styles.meta}>
             <span className={styles.subject}>{currentQuestion.subject || 'Practice'}</span>
             <span className={`${styles.difficulty} ${styles[currentQuestion.difficulty || 'medium']}`}>
@@ -129,7 +129,8 @@ export function QuizEngine({ topicId, count, onComplete }: QuizEngineProps) {
           </div>
           <button 
             onClick={handleBookmark}
-            className={`p-2 rounded-full transition-colors ${isBookmarked ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50'}`}
+            className={`${styles.bookmarkBtn} ${isBookmarked ? styles.bookmarked : ''}`}
+            aria-label="Bookmark question"
           >
             {isBookmarked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
           </button>

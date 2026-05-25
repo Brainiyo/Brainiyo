@@ -154,7 +154,6 @@ const submitMockTest = async (req, res, next) => {
     // Score each answer using NTA scheme
     let rawScore   = 0;
     const answerRows = [];
-    const subjectScores = {};
 
     for (const answer of answers) {
       const q = qMap[answer.questionId];

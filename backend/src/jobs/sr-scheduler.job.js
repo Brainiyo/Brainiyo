@@ -1,7 +1,6 @@
 const cron = require('node-cron');
 const { query } = require('../config/db');
 const logger = require('../utils/logger');
-const { AppError } = require('../middleware/errorHandler');
 
 /**
  * Placeholder for Firebase Cloud Messaging (FCM)

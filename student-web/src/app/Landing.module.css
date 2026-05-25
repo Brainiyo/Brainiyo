@@ -414,3 +414,137 @@
     display: none;
   }
 }
+
+.heroButtons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.sectionHeading {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.mb60 {
+  margin-bottom: 60px;
+}
+
+.floatingTag {
+  position: absolute;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+}
+
+.floatingTag1 {
+  left: -25px;
+  top: 22%;
+  color: #4f46e5;
+  box-shadow: 0 12px 30px -10px rgba(79, 70, 229, 0.35);
+  border: 1px solid rgba(79, 70, 229, 0.25);
+}
+
+.floatingTag2 {
+  left: -35px;
+  bottom: 16%;
+  color: #e11d48;
+  box-shadow: 0 12px 30px -10px rgba(225, 29, 72, 0.35);
+  border: 1px solid rgba(225, 29, 72, 0.25);
+}
+
+.floatingTag3 {
+  right: -15px;
+  bottom: 8%;
+  color: #0d9488;
+  box-shadow: 0 12px 30px -10px rgba(13, 148, 136, 0.35);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .hero {
+    padding: 120px 0 60px;
+  }
+
+  .heroContent h1 {
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+
+  .heroContent p {
+    font-size: 16px;
+    margin-bottom: 24px;
+    max-width: 100%;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+  
+  .heroButtons button {
+    width: 100% !important;
+  }
+
+  .heroStats {
+    margin-top: 32px;
+    gap: 20px;
+    padding-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .statItem h4 {
+    font-size: 24px;
+  }
+
+  .floatingTag1, .floatingTag2, .floatingTag3 {
+    display: none !important;
+  }
+
+  .sectionHeading {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .mb60 {
+    margin-bottom: 32px;
+  }
+
+  .comparison, .how, .features, .pricing {
+    padding: 60px 0;
+  }
+
+  .compCard {
+    padding: 24px 16px;
+  }
+
+  .stepCard, .featCard {
+    padding: 24px;
+  }
+
+  .priceCard {
+    padding: 32px 20px;
+  }
+  
+  .priceDisplay {
+    font-size: 40px;
+    margin: 16px 0 24px;
+  }
+}

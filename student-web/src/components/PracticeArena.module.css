@@ -227,3 +227,71 @@
   font-weight: 600;
   color: var(--text-muted);
 }
+
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.bookmarkBtn {
+  padding: 8px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.bookmarkBtn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.bookmarked {
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+}
+
+@media (max-width: 768px) {
+  .questionCard {
+    padding: 20px;
+  }
+  .body {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+  .options {
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+  .option {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .optText {
+    font-size: 14px;
+  }
+  .feedback {
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+  .explanation {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  .resultSplash {
+    padding: 40px 16px;
+  }
+  .resultSplash h2 {
+    font-size: 24px;
+  }
+  .resultSplash p {
+    font-size: 15px;
+  }
+}

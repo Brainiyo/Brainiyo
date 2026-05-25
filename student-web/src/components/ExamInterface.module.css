@@ -280,3 +280,83 @@
   font-weight: 700;
   color: var(--text-muted);
 }
+
+.paletteToggle {
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 13px;
+}
+.paletteToggle:hover {
+  background: var(--border);
+}
+
+@media (max-width: 768px) {
+  .examHeader {
+    padding: 0 12px;
+  }
+  .examName {
+    display: none;
+  }
+  .headerRight {
+    gap: 12px;
+  }
+  .timer span {
+    display: none;
+  }
+  .paletteToggle {
+    display: block;
+  }
+  .contentArea {
+    padding: 16px;
+  }
+  .qBody {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+  .option {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .optText {
+    font-size: 14px;
+  }
+  
+  .paletteBackdrop {
+    position: fixed;
+    inset: 0;
+    top: 64px;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+
+  .sidebar {
+    position: fixed;
+    right: 0;
+    top: 64px;
+    bottom: 0;
+    width: 280px;
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+  
+  .actions {
+    padding-top: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .leftActions, .rightActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

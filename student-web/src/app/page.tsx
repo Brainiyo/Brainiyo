@@ -58,7 +58,7 @@ export default function LandingPage() {
             <h1>Master every concept. <br /><span className={styles.gradientText}>Crack the exam.</span></h1>
             <p>Personalized active learning that adapts to your speed. Practice over 100k+ real exam questions, pinpoint deep conceptual gaps, and secure your target rank.</p>
             
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div className={styles.heroButtons}>
               <Button size="lg" onClick={() => window.location.href = portalUrl}>
                 {isAuthenticated ? 'Resume My Prep' : 'Start Practicing Now'}
               </Button>
@@ -98,25 +98,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
               whileHover={{ scale: 1.05, translateY: -4 }}
-              style={{
-                position: 'absolute',
-                left: '-25px',
-                top: '22%',
-                zIndex: 10,
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(12px)',
-                color: '#4f46e5',
-                padding: '10px 18px',
-                borderRadius: '100px',
-                boxShadow: '0 12px 30px -10px rgba(79, 70, 229, 0.35)',
-                border: '1px solid rgba(79, 70, 229, 0.25)',
-                fontSize: '13px',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'default'
-              }}
+              className={`${styles.floatingTag} ${styles.floatingTag1}`}
             >
               <span style={{ fontSize: '15px' }}>⚡</span> Electrostatics
             </motion.div>
@@ -126,25 +108,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
               whileHover={{ scale: 1.05, translateY: -4 }}
-              style={{
-                position: 'absolute',
-                left: '-35px',
-                bottom: '16%',
-                zIndex: 10,
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(12px)',
-                color: '#e11d48',
-                padding: '10px 18px',
-                borderRadius: '100px',
-                boxShadow: '0 12px 30px -10px rgba(225, 29, 72, 0.35)',
-                border: '1px solid rgba(225, 29, 72, 0.25)',
-                fontSize: '13px',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'default'
-              }}
+              className={`${styles.floatingTag} ${styles.floatingTag2}`}
             >
               <span style={{ fontSize: '15px' }}>🧪</span> Organic Reactions
             </motion.div>
@@ -154,25 +118,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.0, duration: 0.6 }}
               whileHover={{ scale: 1.05, translateY: -4 }}
-              style={{
-                position: 'absolute',
-                right: '-15px',
-                bottom: '8%',
-                zIndex: 10,
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(12px)',
-                color: '#0d9488',
-                padding: '10px 18px',
-                borderRadius: '100px',
-                boxShadow: '0 12px 30px -10px rgba(13, 148, 136, 0.35)',
-                border: '1px solid rgba(13, 148, 136, 0.25)',
-                fontSize: '13px',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'default'
-              }}
+              className={`${styles.floatingTag} ${styles.floatingTag3}`}
             >
               <span style={{ fontSize: '15px' }}>🧬</span> Molecular Genetics
             </motion.div>
@@ -236,7 +182,7 @@ export default function LandingPage() {
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
             <div className={styles.sectionTag}>The Advantage</div>
-            <h2 style={{ fontSize: '42px', marginBottom: '20px' }}>Why Brainiyo outsmarts generic coaching</h2>
+            <h2 className={styles.sectionHeading}>Why Brainiyo outsmarts generic coaching</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Passive video watching gives a false sense of confidence. Real exam success requires hyper-personalized active recall.</p>
           </div>
 
@@ -268,7 +214,7 @@ export default function LandingPage() {
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '650px', margin: '0 auto' }}>
             <div className={styles.sectionTag}>Methodology</div>
-            <h2 style={{ fontSize: '42px', marginBottom: '20px' }}>Three steps to absolute mastery</h2>
+            <h2 className={styles.sectionHeading}>Three steps to absolute mastery</h2>
           </div>
           <div className={styles.stepsGrid}>
             <StepCard num="01" title="Target a Module" desc="Select any precise chapter or conceptual topic from the standardized syllabus." />
@@ -281,7 +227,7 @@ export default function LandingPage() {
       <section className={styles.features} id="features">
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '42px', marginBottom: '60px' }}>Engineered for ultimate test outcomes</h2>
+            <h2 className={`${styles.sectionHeading} ${styles.mb60}`}>Engineered for ultimate test outcomes</h2>
           </div>
           <div className={styles.featuresGrid}>
             <FeatureCard icon="⚡" title="ML Calibrator" desc="Difficulty nodes adjust based on speed and accuracy strings." />
@@ -296,7 +242,7 @@ export default function LandingPage() {
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
             <div className={styles.sectionTag}>Pricing</div>
-            <h2 style={{ fontSize: '42px', marginBottom: '20px' }}>Zero barriers to preparation</h2>
+            <h2 className={styles.sectionHeading}>Zero barriers to preparation</h2>
           </div>
           <div className={styles.priceGrid}>
             <div className={styles.priceCard}>

@@ -83,6 +83,7 @@ const login = async (phone, password) => {
   const passwordMatch = await bcrypt.compare(password, user.password_hash);
   if (!passwordMatch) throw new AppError('Invalid phone number or password', 401);
 
+  // eslint-disable-next-line no-unused-vars
   const { password_hash, ...safeUser } = user;
 
   const accessToken  = signAccessToken({ userId: user.id, phone });

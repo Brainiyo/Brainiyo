@@ -67,17 +67,18 @@ const getMe = (req, res) => {
  */
 const updateMe = async (req, res, next) => {
   try {
-    const { name, class: studentClass, target_exam } = req.body;
+    const { name, class: studentClass, target_exam, phone } = req.body;
 
     const result = await query(
       `UPDATE users
        SET name         = COALESCE($1, name),
            class        = COALESCE($2, class),
            target_exam  = COALESCE($3, target_exam),
+           phone        = COALESCE($4, phone),
            is_onboarded = TRUE
-       WHERE id = $4
+       WHERE id = $5
        RETURNING id, name, email, phone, class, target_exam, is_onboarded, xp_points`,
-      [name || null, studentClass || null, target_exam || null, req.user.id]
+      [name || null, studentClass || null, target_exam || null, phone || null, req.user.id]
     );
 
     res.json({ success: true, data: result.rows[0] });

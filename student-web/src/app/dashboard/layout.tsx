@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { Sidebar } from '@/components/Sidebar';
 import { Onboarding } from '@/components/Onboarding';
@@ -6,13 +7,16 @@ import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Menu } from 'lucide-react';
+import Link from 'next/link';
 import styles from '../Home.module.css';
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, loginWithGoogle, logout, streak, updateUser } = useUser();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (isAuthenticated === null) return <div className={styles.splash}>B</div>;
 
@@ -53,18 +57,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (pathname.includes('/analytics')) return 'Performance Insights';
     if (pathname.includes('/leaderboard')) return 'Leaderboard';
     if (pathname.includes('/bookmarks')) return 'Bookmark Vault';
+    if (pathname.includes('/profile')) return 'My Profile';
     return 'Dashboard';
   };
+
 
   const breadcrumb = 'Brainiyo Portal' + pathname.replace('/dashboard', '').replace('/', ' / ').replace(/-/g, ' ');
 
   return (
     <div className={styles.layout}>
-      <Sidebar activeTab={pathname} onTabChange={() => {}} onLogout={logout} user={user} />
+      <Sidebar 
+        activeTab={pathname} 
+        onLogout={logout} 
+        user={user} 
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       
       <main className={styles.main}>
         <header className={styles.header}>
           <div className={styles.headerLeft}>
+            <button 
+              className={styles.menuToggle} 
+              onClick={() => setSidebarOpen(true)}
+              title="Open Navigation Menu"
+            >
+              <Menu size={24} />
+            </button>
             <h2 className="animate-fade">
               {getPageTitle()}
             </h2>
@@ -76,7 +95,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className={styles.headerRight}>
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full mr-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 duration-200 flex items-center justify-center"
+              className={styles.themeToggle}
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
               {theme === 'light' ? (
@@ -87,16 +106,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
 
             {user?.xp_points !== undefined && (
-              <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-full text-indigo-600 dark:text-indigo-300 font-bold text-sm mr-2 border border-indigo-100 dark:border-indigo-800/40">
-                <span className="text-lg">⭐</span> {user.xp_points} XP
+              <div className={styles.xpBadge}>
+                <span>⭐</span> <span>{user.xp_points} <span className={styles.badgeLabel}>XP</span></span>
               </div>
             )}
             <div className={styles.streakBadge}>
-              🔥 {streak?.current_streak || 0} Day Streak
+              🔥 {streak?.current_streak || 0} <span className={styles.badgeLabel}>Day Streak</span>
             </div>
-            <div className={styles.userProfile}>
+            <Link href="/dashboard/profile" className={styles.userProfile} title="My Profile">
               <div className={styles.avatar}>{user?.name?.charAt(0)}</div>
-            </div>
+            </Link>
           </div>
         </header>
 

@@ -21,7 +21,7 @@ const recordAttempt = async (userId, questionId, selectedOption, timeTakenSecond
 
   if (!qResult.rows.length) throw new AppError('Question not found', 404);
 
-  const { correct_option, explanation_text, difficulty, topic_id } = qResult.rows[0];
+  const { correct_option, explanation_text, difficulty } = qResult.rows[0];
   const isCorrect = selectedOption !== null && selectedOption === correct_option;
 
   const client = await getClient();

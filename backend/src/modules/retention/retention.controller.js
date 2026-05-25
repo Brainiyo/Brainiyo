@@ -12,7 +12,7 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     const notifications = await getUserNotifications(req.user.id);
     res.json(notifications);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch notifications' });
   }
 });
@@ -25,7 +25,7 @@ router.post('/:id/read', authMiddleware, async (req, res) => {
   try {
     await markAsRead(req.user.id, req.params.id);
     res.json({ success: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to update notification' });
   }
 });
@@ -38,7 +38,7 @@ router.get('/streak', authMiddleware, async (req, res) => {
   try {
     const status = await getStreakStatus(req.user.id);
     res.json(status);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch streak status' });
   }
 });
@@ -54,7 +54,7 @@ router.post('/streak/freeze', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'No streak freezes available or logic failed' });
     }
     res.json({ success: true, message: 'Streak freeze applied' });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to apply streak freeze' });
   }
 });

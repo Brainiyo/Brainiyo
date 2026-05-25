@@ -14,6 +14,7 @@ const updateSchema = {
     name:        z.string().min(2).max(100).optional(),
     class:       z.union([z.literal(11), z.literal(12), z.literal(13)]).optional(),
     target_exam: z.enum(['NEET', 'JEE']).optional(),
+    phone:       z.string().regex(/^[6-9]\d{9}$/).optional().nullable(),
   }),
 };
 
