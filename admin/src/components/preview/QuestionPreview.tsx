@@ -6,8 +6,7 @@ export interface QuestionData {
   topic: string;
   difficulty: string;
   examType: string;
-  questionText: string;
-  questionImageUrl: string;
+  q_type: 'MCQ' | 'INTEGER';
   options: { A: string; B: string; C: string; D: string };
   correctAnswer: string;
   explanation: string;
@@ -48,19 +47,26 @@ export function QuestionPreview({ data }: QuestionPreviewProps) {
         </div>
       )}
 
-      <div className="space-y-3 mb-8">
-        {['A', 'B', 'C', 'D'].map((opt) => (
-          <div 
-            key={opt}
-            className="flex items-start p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950"
-          >
-            <span className="font-bold text-slate-400 mr-4 mt-0.5">{opt}</span>
-            <span className="flex-1">
-              {data.options?.[opt as keyof typeof data.options] || <span className="text-slate-300 italic">Option {opt}</span>}
-            </span>
-          </div>
-        ))}
-      </div>
+      {data.q_type === 'INTEGER' ? (
+        <div className="mb-8 p-4 rounded-xl border-2 border-dashed border-indigo-200 dark:border-indigo-800 bg-indigo-50/20 dark:bg-indigo-900/10">
+          <p className="text-sm font-bold text-slate-500 mb-1">Correct Numerical Answer:</p>
+          <p className="font-mono text-xl font-extrabold text-indigo-600 dark:text-indigo-400">{data.correctAnswer || <span className="text-slate-300 italic">Enter answer...</span>}</p>
+        </div>
+      ) : (
+        <div className="space-y-3 mb-8">
+          {['A', 'B', 'C', 'D'].map((opt) => (
+            <div 
+              key={opt}
+              className="flex items-start p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950"
+            >
+              <span className="font-bold text-slate-400 mr-4 mt-0.5">{opt}</span>
+              <span className="flex-1">
+                {data.options?.[opt as keyof typeof data.options] || <span className="text-slate-300 italic">Option {opt}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {data.explanation && (
         <div className="mt-8 pt-6 border-t border-dashed border-slate-200 dark:border-slate-800">

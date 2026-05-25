@@ -8,21 +8,27 @@ import { cn } from '@/lib/utils';
 
 import { API_BASE_URL } from '@/lib/config';
 
-export function BulkUpload() {
+export function BulkUpload({ forcedType = 'MCQ' }: { forcedType?: 'MCQ' | 'INTEGER' }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const downloadTemplate = () => {
-    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'examType', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation'];
-    const sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'JEE Main', 'Sample Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution'];
+    let headers, sample;
+    if (forcedType === 'INTEGER') {
+      headers = ['subject', 'chapter', 'topic', 'difficulty', 'examType', 'questionText', 'correctAnswer', 'explanation'];
+      sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'JEE Main', 'Find the sum of 5 and 7.', '12', 'The sum is 5 + 7 = 12.'];
+    } else {
+      headers = ['subject', 'chapter', 'topic', 'difficulty', 'examType', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation'];
+      sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'JEE Main', 'Sample MCQ Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution'];
+    }
     
     const csv = Papa.unparse([headers, sample]);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'brainiyo_bulk_template.csv';
+    a.download = forcedType === 'INTEGER' ? 'brainiyo_bulk_integer_template.csv' : 'brainiyo_bulk_mcq_template.csv';
     a.click();
   };
 
@@ -51,12 +57,13 @@ export function BulkUpload() {
             difficulty: row.difficulty || 'medium',
             examType: row.examType || 'JEE Main',
             body: row.questionText,
-            option_a: row.optionA,
-            option_b: row.optionB,
-            option_c: row.optionC,
-            option_d: row.optionD,
+            option_a: forcedType === 'INTEGER' ? null : row.optionA,
+            option_b: forcedType === 'INTEGER' ? null : row.optionB,
+            option_c: forcedType === 'INTEGER' ? null : row.optionC,
+            option_d: forcedType === 'INTEGER' ? null : row.optionD,
             correct_option: row.correctAnswer,
             explanation_text: row.explanation || '',
+            q_type: forcedType,
           }));
 
           const res = await fetch(`${API_BASE_URL}/questions/bulk`, {
@@ -95,9 +102,11 @@ export function BulkUpload() {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-sm">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h2 className="text-xl font-bold mb-2">CSV Bulk Upload</h2>
+            <h2 className="text-xl font-bold mb-2">{forcedType === 'INTEGER' ? 'Bulk Integer Upload' : 'CSV Bulk Upload'}</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Upload hundreds of questions at once using a standardized CSV format.
+              {forcedType === 'INTEGER' 
+                ? 'Upload hundreds of numerical answer questions at once using a standardized CSV format.'
+                : 'Upload hundreds of MCQ questions at once using a standardized CSV format.'}
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-2">
@@ -145,7 +154,7 @@ export function BulkUpload() {
             <ul className="list-disc list-inside space-y-1 opacity-90">
               <li>Use the provided template for correct column mapping.</li>
               <li>Images cannot be uploaded via CSV. You can add them later via the Edit option.</li>
-              <li>Correct Answer must be exactly A, B, C, or D.</li>
+              <li>{forcedType === 'INTEGER' ? 'Correct Answer must be a numerical value (e.g. 12 or 5.5).' : 'Correct Answer must be exactly A, B, C, or D.'}</li>
               <li>Subject must be one of: Physics, Chemistry, Mathematics, Biology.</li>
             </ul>
           </div>

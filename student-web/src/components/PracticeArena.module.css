@@ -258,6 +258,64 @@
   color: var(--primary) !important;
 }
 
+.integerInputContainer {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.integerLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.integerInput {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px 20px;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: monospace;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+}
+
+.integerInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15);
+  background: var(--card);
+}
+
+.integerAnswerFeedback {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.integerAnswerFeedback p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.integerAnswerFeedback p strong {
+  font-size: 16px;
+  font-family: monospace;
+}
+
 @media (max-width: 768px) {
   .questionCard {
     padding: 20px;

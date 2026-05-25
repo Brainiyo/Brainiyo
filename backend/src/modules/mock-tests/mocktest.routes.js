@@ -14,7 +14,7 @@ const submitSchema = {
     answers: z.array(
       z.object({
         questionId:     z.string().uuid(),
-        selectedOption: z.enum(['A', 'B', 'C', 'D']).nullable().default(null),
+        selectedOption: z.string().nullable().default(null),
       })
     ).min(1),
   }),

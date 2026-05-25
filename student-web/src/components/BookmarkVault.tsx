@@ -93,24 +93,31 @@ export const BookmarkVault = () => {
                 
                 <div className={styles.viewerBody} dangerouslySetInnerHTML={{ __html: activeQuestion.body }} />
                 
-                <div className={styles.optionsList}>
-                  {['A', 'B', 'C', 'D'].map((opt) => (
-                    <div 
-                      key={opt}
-                      className={`${styles.optionItem} ${
-                        activeQuestion.correct_option === opt 
-                          ? styles.correctOption 
-                          : styles.incorrectOption
-                      }`}
-                    >
-                      <div>
-                        <span className={styles.optionLabel}>{opt}</span>
-                        <span className={styles.optionText} dangerouslySetInnerHTML={{ __html: activeQuestion[`option_${opt.toLowerCase()}`] }} />
+                {activeQuestion.q_type === 'INTEGER' ? (
+                  <div className={styles.integerAnswerBox}>
+                    <p className="text-sm font-semibold text-slate-500 mb-1">Correct Answer:</p>
+                    <p className="font-mono text-lg font-bold text-emerald-600 dark:text-emerald-400">{activeQuestion.correct_option}</p>
+                  </div>
+                ) : (
+                  <div className={styles.optionsList}>
+                    {['A', 'B', 'C', 'D'].map((opt) => (
+                      <div 
+                        key={opt}
+                        className={`${styles.optionItem} ${
+                          activeQuestion.correct_option === opt 
+                            ? styles.correctOption 
+                            : styles.incorrectOption
+                        }`}
+                      >
+                        <div>
+                          <span className={styles.optionLabel}>{opt}</span>
+                          <span className={styles.optionText} dangerouslySetInnerHTML={{ __html: activeQuestion[`option_${opt.toLowerCase()}`] }} />
+                        </div>
+                        {activeQuestion.correct_option === opt && <span className={styles.correctText}>✓ Correct Answer</span>}
                       </div>
-                      {activeQuestion.correct_option === opt && <span className={styles.correctText}>✓ Correct Answer</span>}
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
                 {activeQuestion.explanation_text && (
                   <div className={styles.explanationBox}>

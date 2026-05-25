@@ -118,26 +118,46 @@ export const RevisionDeck = () => {
             {currentQuestion.body}
           </div>
 
-          <div className={styles.options}>
-            {['A', 'B', 'C', 'D'].map((opt) => {
-              const content = currentQuestion[`option_${opt.toLowerCase()}`];
-              const isSelected = selectedOption === opt;
-              const isCorrect = showResult && opt === result?.correct_option;
-              const isWrong = showResult && isSelected && !result?.is_correct;
+          {currentQuestion.q_type === 'INTEGER' ? (
+            <div className={styles.integerInputContainer}>
+              <label className={styles.integerLabel}>Your Numerical Answer</label>
+              <input
+                type="text"
+                className={styles.integerInput}
+                placeholder="Type your answer here..."
+                value={selectedOption || ''}
+                onChange={(e) => !showResult && setSelectedOption(e.target.value)}
+                disabled={showResult}
+              />
+              {showResult && (
+                <div className={styles.integerAnswerFeedback}>
+                  <p>Correct Answer: <strong className="text-emerald-500">{result?.correct_option}</strong></p>
+                  <p>Your Answer: <strong className={result?.is_correct ? "text-emerald-500" : "text-red-500"}>{selectedOption}</strong></p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.options}>
+              {['A', 'B', 'C', 'D'].map((opt) => {
+                const content = currentQuestion[`option_${opt.toLowerCase()}`];
+                const isSelected = selectedOption === opt;
+                const isCorrect = showResult && opt === result?.correct_option;
+                const isWrong = showResult && isSelected && !result?.is_correct;
 
-              return (
-                <button
-                  key={opt}
-                  className={`${styles.option} ${isSelected ? styles.selected : ''} ${isCorrect ? styles.correct : ''} ${isWrong ? styles.wrong : ''}`}
-                  onClick={() => handleOptionSelect(opt)}
-                  disabled={showResult}
-                >
-                  <span className={styles.optionLetter}>{opt}</span>
-                  <span className={styles.optionText}>{content}</span>
-                </button>
-              );
-            })}
-          </div>
+                return (
+                  <button
+                    key={opt}
+                    className={`${styles.option} ${isSelected ? styles.selected : ''} ${isCorrect ? styles.correct : ''} ${isWrong ? styles.wrong : ''}`}
+                    onClick={() => handleOptionSelect(opt)}
+                    disabled={showResult}
+                  >
+                    <span className={styles.optionLetter}>{opt}</span>
+                    <span className={styles.optionText}>{content}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {showResult && (
             <motion.div 
@@ -149,9 +169,11 @@ export const RevisionDeck = () => {
                 {result.is_correct ? '✅ Correct Answer!' : '❌ Incorrect'}
               </div>
               <p>{result.explanation}</p>
-              <div className="mt-4 text-xs font-bold text-slate-400">
-                Next review scheduled: {new Date(result.spaced_repetition.next_review_at).toLocaleDateString()}
-              </div>
+              {result.spaced_repetition && (
+                <div className="mt-4 text-xs font-bold text-slate-400">
+                  Next review scheduled: {new Date(result.spaced_repetition.next_review_at).toLocaleDateString()}
+                </div>
+              )}
             </motion.div>
           )}
 

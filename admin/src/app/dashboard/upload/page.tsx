@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { QuestionForm } from '@/components/forms/QuestionForm';
 import { BulkUpload } from '@/components/forms/BulkUpload';
 import { cn } from '@/lib/utils';
-import { FileText, Files } from 'lucide-react';
+import { FileText, Files, Hash, FileSpreadsheet } from 'lucide-react';
 
 export default function UploadPage() {
-  const [mode, setMode] = useState<'single' | 'bulk'>('single');
+  const [mode, setMode] = useState<'mcq' | 'integer' | 'bulk-mcq' | 'bulk-integer'>('mcq');
 
   return (
     <div className="h-full flex flex-col">
@@ -17,36 +17,64 @@ export default function UploadPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit mb-8 border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-wrap gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit mb-8 border border-slate-200 dark:border-slate-700">
         <button
-          onClick={() => setMode('single')}
+          onClick={() => setMode('mcq')}
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
-            mode === 'single' 
+            mode === 'mcq' 
               ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm" 
               : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           )}
         >
           <FileText size={18} />
-          Single Upload
+          MCQ Upload
         </button>
         <button
-          onClick={() => setMode('bulk')}
+          onClick={() => setMode('integer')}
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
-            mode === 'bulk' 
+            mode === 'integer' 
+              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm" 
+              : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          )}
+        >
+          <Hash size={18} />
+          Integer Upload
+        </button>
+        <button
+          onClick={() => setMode('bulk-mcq')}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
+            mode === 'bulk-mcq' 
               ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm" 
               : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           )}
         >
           <Files size={18} />
-          Bulk CSV Upload
+          Bulk MCQ Upload
+        </button>
+        <button
+          onClick={() => setMode('bulk-integer')}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
+            mode === 'bulk-integer' 
+              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm" 
+              : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          )}
+        >
+          <FileSpreadsheet size={18} />
+          Bulk Integer Upload
         </button>
       </div>
       
       <div className="flex-1 overflow-hidden">
-        {mode === 'single' ? <QuestionForm /> : <BulkUpload />}
+        {mode === 'mcq' && <QuestionForm forcedType="MCQ" />}
+        {mode === 'integer' && <QuestionForm forcedType="INTEGER" />}
+        {mode === 'bulk-mcq' && <BulkUpload forcedType="MCQ" />}
+        {mode === 'bulk-integer' && <BulkUpload forcedType="INTEGER" />}
       </div>
     </div>
   );
 }
+

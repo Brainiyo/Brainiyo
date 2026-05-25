@@ -119,20 +119,33 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
 
           <div className={styles.qBody} dangerouslySetInnerHTML={{ __html: currentQ?.body }} />
 
-          <div className={styles.options}>
-            {['A', 'B', 'C', 'D'].map((opt) => (
-              <label key={opt} className={`${styles.option} ${answers[currentQ.id] === opt ? styles.selectedOpt : ''}`}>
-                <input 
-                  type="radio" 
-                  name={`q-${currentQ.id}`} 
-                  checked={answers[currentQ.id] === opt}
-                  onChange={() => setAnswers(prev => ({ ...prev, [currentQ.id]: opt }))}
-                />
-                <span className={styles.radioCustom}></span>
-                <span className={styles.optText} dangerouslySetInnerHTML={{ __html: currentQ[`option_${opt.toLowerCase()}`] }} />
-              </label>
-            ))}
-          </div>
+          {currentQ?.q_type === 'INTEGER' ? (
+            <div className={styles.integerInputContainer}>
+              <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Your Numerical Answer:</label>
+              <input
+                type="text"
+                className={styles.integerInput}
+                placeholder="Enter numerical answer..."
+                value={answers[currentQ.id] || ''}
+                onChange={(e) => setAnswers(prev => ({ ...prev, [currentQ.id]: e.target.value }))}
+              />
+            </div>
+          ) : (
+            <div className={styles.options}>
+              {['A', 'B', 'C', 'D'].map((opt) => (
+                <label key={opt} className={`${styles.option} ${answers[currentQ.id] === opt ? styles.selectedOpt : ''}`}>
+                  <input 
+                    type="radio" 
+                    name={`q-${currentQ.id}`} 
+                    checked={answers[currentQ.id] === opt}
+                    onChange={() => setAnswers(prev => ({ ...prev, [currentQ.id]: opt }))}
+                  />
+                  <span className={styles.radioCustom}></span>
+                  <span className={styles.optText} dangerouslySetInnerHTML={{ __html: currentQ[`option_${opt.toLowerCase()}`] }} />
+                </label>
+              ))}
+            </div>
+          )}
 
           <div className={styles.actions}>
             <div className={styles.leftActions}>
@@ -191,7 +204,7 @@ export const ExamInterface = ({ testId, testTitle, onFinish }: ExamInterfaceProp
             <div className={styles.palette}>
               {questions.map((_, idx) => {
                 const qId = questions[idx].id;
-                const isAnswered = answers[qId] !== undefined;
+                const isAnswered = answers[qId] !== undefined && String(answers[qId]).trim() !== '';
                 const isMarked = markedForReview[idx];
                 const isCurrent = currentIdx === idx;
 

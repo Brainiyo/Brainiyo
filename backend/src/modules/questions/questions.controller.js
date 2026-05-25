@@ -63,7 +63,7 @@ const questionsController = {
       if (!qRes.rows.length) throw new AppError('Question not found', 404);
       
       const { correct_option, explanation_text } = qRes.rows[0];
-      const isCorrect = selectedOption === correct_option;
+      const isCorrect = String(selectedOption || '').trim().toLowerCase() === String(correct_option || '').trim().toLowerCase();
       const quality = isCorrect ? 5 : 0; // Simplified quality mapping
 
       // 2. Record Attempt (Trigger updates student_topic_stats)
@@ -223,12 +223,26 @@ const questionsController = {
 
   createQuestion: async (req, res, next) => {
     try {
-      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url } = req.body;
+      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url, q_type = 'MCQ' } = req.body;
+      const isInteger = q_type === 'INTEGER';
       const { rows } = await query(
-        `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11)
+        `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url, q_type)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11, $12)
          RETURNING *`,
-        [topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty.toLowerCase(), source, image_url]
+        [
+          topic_id, 
+          body, 
+          isInteger ? null : option_a, 
+          isInteger ? null : option_b, 
+          isInteger ? null : option_c, 
+          isInteger ? null : option_d, 
+          correct_option, 
+          explanation_text, 
+          difficulty.toLowerCase(), 
+          source, 
+          image_url,
+          q_type
+        ]
       );
       res.status(201).json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
@@ -237,14 +251,31 @@ const questionsController = {
   updateQuestion: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, is_active } = req.body;
+      const { topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, is_active, q_type } = req.body;
+      const isInteger = q_type === 'INTEGER';
       const { rows } = await query(
         `UPDATE questions 
-         SET topic_id = $1, body = $2, option_a = $3, option_b = $4, option_c = $5, option_d = $6, 
-             correct_option = $7, explanation_text = $8, difficulty = $9::difficulty_level, source = $10::question_source, is_active = $11
-         WHERE id = $12 
+         SET topic_id = $1, body = $2, 
+             option_a = $3, option_b = $4, option_c = $5, option_d = $6, 
+             correct_option = $7, explanation_text = $8, difficulty = $9::difficulty_level, 
+             source = $10::question_source, is_active = $11, q_type = $12
+         WHERE id = $13 
          RETURNING *`,
-        [topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty.toLowerCase(), source, is_active, id]
+        [
+          topic_id, 
+          body, 
+          isInteger ? null : option_a, 
+          isInteger ? null : option_b, 
+          isInteger ? null : option_c, 
+          isInteger ? null : option_d, 
+          correct_option, 
+          explanation_text, 
+          difficulty.toLowerCase(), 
+          source, 
+          is_active, 
+          q_type || 'MCQ',
+          id
+        ]
       );
       res.json({ success: true, data: rows[0] });
     } catch (err) { next(err); }
@@ -287,11 +318,12 @@ const questionsController = {
           tId = tRes.rows[0].id;
         }
 
+        const qType = q.q_type || 'MCQ';
         const qRes = await client.query(
-          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source)
+          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, q_type)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11)
            RETURNING id`,
-          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard']
+          [tId, q.body, qType === 'INTEGER' ? null : q.option_a, qType === 'INTEGER' ? null : q.option_b, qType === 'INTEGER' ? null : q.option_c, qType === 'INTEGER' ? null : q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard', qType]
         );
         results.push(qRes.rows[0].id);
       }

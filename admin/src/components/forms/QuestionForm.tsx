@@ -21,26 +21,42 @@ const questionSchema = z.object({
   examType: z.enum(['JEE Main', 'JEE Advanced', 'NEET']),
   questionText: z.string().min(5, "Question text must be at least 5 characters"),
   questionImageUrl: z.string().optional(),
+  q_type: z.enum(['MCQ', 'INTEGER']).default('MCQ'),
   options: z.object({
-    A: z.string().min(1, "Option A is required"),
-    B: z.string().min(1, "Option B is required"),
-    C: z.string().min(1, "Option C is required"),
-    D: z.string().min(1, "Option D is required"),
-  }),
-  correctAnswer: z.enum(['A', 'B', 'C', 'D']),
+    A: z.string().optional(),
+    B: z.string().optional(),
+    C: z.string().optional(),
+    D: z.string().optional(),
+  }).optional(),
+  correctAnswer: z.string().min(1, "Correct answer is required"),
   explanation: z.string().min(1, "Explanation is required"),
   solutionImageUrl: z.string().optional(),
+}).refine((data) => {
+  if (data.q_type === 'MCQ') {
+    return (
+      !!data.options?.A &&
+      !!data.options?.B &&
+      !!data.options?.C &&
+      !!data.options?.D &&
+      ['A', 'B', 'C', 'D'].includes(data.correctAnswer)
+    );
+  }
+  return true;
+}, {
+  message: "For MCQ, all options (A-D) are required and correct answer must be A, B, C, or D",
+  path: ["correctAnswer"]
 });
 
-type QuestionFormValues = z.infer<typeof questionSchema>;
+type QuestionFormValues = z.input<typeof questionSchema>;
 
 interface QuestionFormProps {
   initialData?: any;
   onSuccess?: (data?: any) => void;
   isModal?: boolean;
+  forcedType?: 'MCQ' | 'INTEGER';
 }
 
-export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormProps) {
+export function QuestionForm({ initialData, onSuccess, isModal, forcedType }: QuestionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [chapters, setChapters] = useState<any[]>([]);
@@ -56,6 +72,7 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
       topic_id: initialData.topic_id || '',
       difficulty: (initialData.difficulty?.charAt(0).toUpperCase() + initialData.difficulty?.slice(1)) as any || 'Medium',
       examType: initialData.exam_type || 'JEE Main',
+      q_type: forcedType || initialData.q_type || 'MCQ',
       questionText: initialData.body || '',
       questionImageUrl: initialData.image_url || '',
       options: {
@@ -73,6 +90,7 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
       topic_id: '',
       difficulty: 'Medium',
       examType: 'JEE Main',
+      q_type: forcedType || 'MCQ',
       correctAnswer: 'A',
       options: { A: '', B: '', C: '', D: '' }
     }
@@ -86,6 +104,7 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
         topic_id: initialData.topic_id || '',
         difficulty: (initialData.difficulty?.charAt(0).toUpperCase() + initialData.difficulty?.slice(1)) as any || 'Medium',
         examType: initialData.exam_type || 'JEE Main',
+        q_type: forcedType || initialData.q_type || 'MCQ',
         questionText: initialData.body || '',
         questionImageUrl: initialData.image_url || '',
         options: {
@@ -99,10 +118,11 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
         solutionImageUrl: initialData.solution_image_url || '',
       });
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, forcedType]);
 
   const selectedSubjectId = watch('subject_id');
   const selectedChapterId = watch('chapter_id');
+  const currentQType = watch('q_type') || 'MCQ';
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/curriculum/subjects`)
@@ -153,16 +173,17 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
         body: JSON.stringify({
           topic_id: data.topic_id,
           body: data.questionText,
-          option_a: data.options.A,
-          option_b: data.options.B,
-          option_c: data.options.C,
-          option_d: data.options.D,
+          option_a: data.q_type === 'INTEGER' ? null : data.options?.A,
+          option_b: data.q_type === 'INTEGER' ? null : data.options?.B,
+          option_c: data.q_type === 'INTEGER' ? null : data.options?.C,
+          option_d: data.q_type === 'INTEGER' ? null : data.options?.D,
           correct_option: data.correctAnswer,
           explanation_text: data.explanation,
           difficulty: data.difficulty.toLowerCase(),
           image_url: data.questionImageUrl,
           solution_image_url: data.solutionImageUrl,
-          source: isEditing ? initialData.source : 'Admin Dashboard'
+          source: isEditing ? initialData.source : 'Admin Dashboard',
+          q_type: data.q_type
         })
       });
 
@@ -236,6 +257,15 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
                     <option value="NEET">NEET</option>
                   </select>
                 </div>
+                {!forcedType && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">Question Type</label>
+                    <select {...register('q_type')} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                      <option value="MCQ">Multiple Choice (MCQ)</option>
+                      <option value="INTEGER">Integer / Numerical</option>
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">Chapter</label>
                   <select 
@@ -319,39 +349,58 @@ export function QuestionForm({ initialData, onSuccess, isModal }: QuestionFormPr
                 )}
               />
 
-              <div className="space-y-3 pt-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Options</label>
-                <div className="grid grid-cols-1 gap-3">
-                  {['A', 'B', 'C', 'D'].map(opt => (
-                    <div key={opt} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 text-sm border border-slate-200 dark:border-slate-700">{opt}</div>
-                      <input 
-                        {...register(`options.${opt as 'A'|'B'|'C'|'D'}`)} 
-                        className={cn(
-                          "flex-1 rounded-lg border bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none",
-                          errors.options?.[opt as 'A'|'B'|'C'|'D'] ? "border-red-500" : "border-slate-200 dark:border-slate-700"
-                        )} 
-                        placeholder={`Enter option ${opt}...`} 
-                      />
+              {currentQType === 'MCQ' ? (
+                <>
+                  <div className="space-y-3 pt-2">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Options</label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {['A', 'B', 'C', 'D'].map(opt => (
+                        <div key={opt} className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 text-sm border border-slate-200 dark:border-slate-700">{opt}</div>
+                          <input 
+                            {...register(`options.${opt as 'A'|'B'|'C'|'D'}`)} 
+                            className={cn(
+                              "flex-1 rounded-lg border bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none",
+                              errors.options?.[opt as 'A'|'B'|'C'|'D'] ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                            )} 
+                            placeholder={`Enter option ${opt}...`} 
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                {errors.options && <p className="text-red-500 text-[11px] mt-1 font-medium text-center">All options are required</p>}
-              </div>
+                    {errors.options && <p className="text-red-500 text-[11px] mt-1 font-medium text-center">All options are required</p>}
+                  </div>
 
-              <div className="pt-2">
-                <label className="block text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Correct Answer</label>
-                <div className="flex gap-3">
-                  {['A', 'B', 'C', 'D'].map(opt => (
-                    <label key={opt} className="flex-1">
-                      <input type="radio" value={opt} {...register('correctAnswer')} className="peer sr-only" />
-                      <div className="text-center px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 cursor-pointer peer-checked:border-indigo-500 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-900/20 peer-checked:text-indigo-700 dark:peer-checked:text-indigo-400 font-bold transition-all hover:border-slate-200 dark:hover:border-slate-700">
-                        {opt}
-                      </div>
-                    </label>
-                  ))}
+                  <div className="pt-2">
+                    <label className="block text-sm font-medium mb-3 text-slate-700 dark:text-slate-300">Correct Answer</label>
+                    <div className="flex gap-3">
+                      {['A', 'B', 'C', 'D'].map(opt => (
+                        <label key={opt} className="flex-1">
+                          <input type="radio" value={opt} {...register('correctAnswer')} className="peer sr-only" />
+                          <div className="text-center px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 cursor-pointer peer-checked:border-indigo-500 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-900/20 peer-checked:text-indigo-700 dark:peer-checked:text-indigo-400 font-bold transition-all hover:border-slate-200 dark:hover:border-slate-700">
+                            {opt}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                    {errors.correctAnswer && <p className="text-red-500 text-[11px] mt-1 font-medium text-center">{errors.correctAnswer.message}</p>}
+                  </div>
+                </>
+              ) : (
+                <div className="pt-2 space-y-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Correct Answer (Numerical Value)</label>
+                  <input
+                    type="text"
+                    {...register('correctAnswer')}
+                    className={cn(
+                      "w-full rounded-lg border bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none",
+                      errors.correctAnswer ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                    )}
+                    placeholder="e.g. 12 or 5.5"
+                  />
+                  {errors.correctAnswer && <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.correctAnswer.message}</p>}
                 </div>
-              </div>
+              )}
             </section>
 
             <hr className="border-slate-100 dark:border-slate-800" />

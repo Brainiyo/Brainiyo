@@ -15,7 +15,7 @@ const nextSchema = {
 const attemptSchema = {
   body: z.object({
     questionId:        z.string().uuid(),
-    selectedOption:    z.enum(['A', 'B', 'C', 'D']).nullable().default(null),
+    selectedOption:    z.string().nullable().default(null),
     timeTakenSeconds:  z.number().int().min(0).max(7200),
   }),
 };

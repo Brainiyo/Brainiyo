@@ -167,7 +167,7 @@ const submitMockTest = async (req, res, next) => {
         // Skipped
         questionScore = NTA.SKIP;
         isCorrect     = false;
-      } else if (selected === q.correct_option) {
+      } else if (String(selected || '').trim().toLowerCase() === String(q.correct_option || '').trim().toLowerCase()) {
         questionScore = NTA.CORRECT;
         isCorrect     = true;
       } else {
@@ -288,7 +288,7 @@ const getResult = async (req, res, next) => {
     const wrongRes = await query(
       `SELECT mta.question_id, mta.selected_option, mta.nta_score,
               q.body, q.option_a, q.option_b, q.option_c, q.option_d,
-              q.correct_option, q.explanation_text, q.difficulty,
+              q.correct_option, q.explanation_text, q.difficulty, q.q_type,
               s.name AS subject_name
        FROM mock_test_answers mta
        JOIN questions q ON q.id = mta.question_id

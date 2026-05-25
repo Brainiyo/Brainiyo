@@ -212,11 +212,13 @@ module.exports = {
           tId = tRes.rows[0].id;
         }
 
+        const qType = q.q_type || 'MCQ';
+        const isInteger = qType === 'INTEGER';
         const qRes = await client.query(
-          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11)
+          `INSERT INTO questions (topic_id, body, option_a, option_b, option_c, option_d, correct_option, explanation_text, difficulty, source, image_url, q_type)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::difficulty_level, $10::question_source, $11, $12)
            RETURNING id`,
-          [tId, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard', q.image_url || null]
+          [tId, q.body, isInteger ? null : q.option_a, isInteger ? null : q.option_b, isInteger ? null : q.option_c, isInteger ? null : q.option_d, q.correct_option, q.explanation_text, q.difficulty.toLowerCase(), 'Admin Dashboard', q.image_url || null, qType]
         );
         
         const questionId = qRes.rows[0].id;
@@ -298,7 +300,7 @@ module.exports = {
 
       // Fetch questions
       const questionsRes = await query(
-        `SELECT q.id, q.body, q.option_a, q.option_b, q.option_c, q.option_d, etq.order_index
+        `SELECT q.id, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.q_type, etq.order_index
          FROM exam_template_questions etq
          JOIN questions q ON q.id = etq.question_id
          WHERE etq.exam_template_id = $1
@@ -354,7 +356,7 @@ module.exports = {
         if (!ans.questionId) continue;
         
         const correctOpt = correctAnswersMap[ans.questionId];
-        const isCorrect = ans.selectedOption === correctOpt;
+        const isCorrect = String(ans.selectedOption || '').trim().toLowerCase() === String(correctOpt || '').trim().toLowerCase();
         
         if (ans.selectedOption) {
           if (isCorrect) {

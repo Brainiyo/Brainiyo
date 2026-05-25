@@ -145,3 +145,59 @@
   margin-top: 32px;
   align-self: flex-end;
 }
+
+.integerInputContainer {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.integerLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.integerInput {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px 20px;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: monospace;
+  background: var(--card);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  color: var(--text);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.integerInput:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+}
+
+.integerAnswerFeedback {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.integerAnswerFeedback p {
+  font-size: 15px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.integerAnswerFeedback p strong {
+  font-size: 16px;
+  font-family: monospace;
+}

@@ -138,31 +138,51 @@ export function QuizEngine({ topicId, count, onComplete }: QuizEngineProps) {
 
         <div className={styles.body} dangerouslySetInnerHTML={{ __html: currentQuestion.body }} />
 
-        <div className={styles.options}>
-          {['A', 'B', 'C', 'D'].map((opt) => {
-            const isSelected = selectedOption === opt;
-            const isCorrect = revealed && feedback?.correct_option === opt;
-            const isWrong = revealed && isSelected && !isCorrect;
+        {currentQuestion.q_type === 'INTEGER' ? (
+          <div className={styles.integerInputContainer}>
+            <label className={styles.integerLabel}>Your Numerical Answer</label>
+            <input
+              type="text"
+              className={styles.integerInput}
+              placeholder="Type your answer here..."
+              value={selectedOption || ''}
+              onChange={(e) => !revealed && setSelectedOption(e.target.value)}
+              disabled={revealed}
+            />
+            {revealed && (
+              <div className={styles.integerAnswerFeedback}>
+                <p>Correct Answer: <strong className="text-emerald-500">{feedback?.correct_option}</strong></p>
+                <p>Your Answer: <strong className={feedback?.is_correct ? "text-emerald-500" : "text-red-500"}>{selectedOption}</strong></p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className={styles.options}>
+            {['A', 'B', 'C', 'D'].map((opt) => {
+              const isSelected = selectedOption === opt;
+              const isCorrect = revealed && feedback?.correct_option === opt;
+              const isWrong = revealed && isSelected && !isCorrect;
 
-            return (
-              <button
-                key={opt}
-                className={`${styles.option} ${isSelected ? styles.selected : ''} ${isCorrect ? styles.correct : ''} ${isWrong ? styles.wrong : ''}`}
-                onClick={() => !revealed && setSelectedOption(opt)}
-                disabled={revealed}
-              >
-                <span className={styles.optLabel}>{opt}</span>
-                <span className={styles.optText} dangerouslySetInnerHTML={{ __html: currentQuestion[`option_${opt.toLowerCase()}`] }} />
-              </button>
-            );
-          })}
-        </div>
+              return (
+                <button
+                  key={opt}
+                  className={`${styles.option} ${isSelected ? styles.selected : ''} ${isCorrect ? styles.correct : ''} ${isWrong ? styles.wrong : ''}`}
+                  onClick={() => !revealed && setSelectedOption(opt)}
+                  disabled={revealed}
+                >
+                  <span className={styles.optLabel}>{opt}</span>
+                  <span className={styles.optText} dangerouslySetInnerHTML={{ __html: currentQuestion[`option_${opt.toLowerCase()}`] }} />
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {!revealed ? (
           <Button 
             fullWidth 
             size="lg" 
-            disabled={!selectedOption || submitting}
+            disabled={(!selectedOption || !selectedOption.trim()) || submitting}
             onClick={handleSubmit}
           >
             {submitting ? 'Checking...' : 'Check Answer'}
