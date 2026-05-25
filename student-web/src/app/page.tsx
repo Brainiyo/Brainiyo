@@ -227,7 +227,7 @@ export default function LandingPage() {
       <section className={styles.features} id="features">
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
-            <h2 className={`${styles.sectionHeading} ${styles.mb60}`}>Engineered for ultimate test outcomes</h2>
+            <h2 className={`${styles.sectionHeading} ${styles.mb60}`} style={{ color: 'white' }}>Engineered for ultimate test outcomes</h2>
           </div>
           <div className={styles.featuresGrid}>
             <FeatureCard icon="⚡" title="ML Calibrator" desc="Difficulty nodes adjust based on speed and accuracy strings." />
