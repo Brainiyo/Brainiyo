@@ -32,7 +32,7 @@ export default function LandingPage() {
             <a href="#features" className={styles.navLink}>Features</a>
             <a href="#comparison" className={styles.navLink}>Why Us</a>
             <a href="#how" className={styles.navLink}>How it Works</a>
-            <a href="#pricing" className={styles.navLink}>Pricing</a>
+            {/* <a href="#pricing" className={styles.navLink}>Pricing</a> */}
             <a href="#faqs" className={styles.navLink}>FAQs</a>
           </div>
           <div className={styles.navActions}>
@@ -237,7 +237,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
+      {/* Hiding Pricing for now
       <section className={styles.pricing} id="pricing">
         <div className={styles.container}>
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
@@ -269,6 +269,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      */}
+
 
       <footer className={styles.footer}>
         <div className={styles.container}>
