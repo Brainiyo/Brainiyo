@@ -159,7 +159,7 @@ const questionsController = {
 
   listQuestions: async (req, res, next) => {
     try {
-      const { subjectId, chapterId, topicId, difficulty, search, page = 1, limit = 20 } = req.query;
+      const { subjectId, chapterId, topicId, difficulty, search, examType, subjectName, qType, page = 1, limit = 20 } = req.query;
       const offset = (page - 1) * limit;
 
       let whereClauses = ['q.is_active = TRUE'];
@@ -181,6 +181,18 @@ const questionsController = {
         params.push(difficulty.toLowerCase());
         whereClauses.push(`q.difficulty = $${params.length}`);
       }
+      if (examType) {
+        params.push(examType.toUpperCase());
+        whereClauses.push(`s.exam_type = $${params.length}`);
+      }
+      if (subjectName) {
+        params.push(subjectName);
+        whereClauses.push(`s.name = $${params.length}`);
+      }
+      if (qType) {
+        params.push(qType.toUpperCase());
+        whereClauses.push(`q.q_type = $${params.length}`);
+      }
       if (search) {
         params.push(`%${search}%`);
         whereClauses.push(`(q.body ILIKE $${params.length} OR q.explanation_text ILIKE $${params.length})`);
@@ -189,7 +201,7 @@ const questionsController = {
       const where = whereClauses.length ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
       const { rows } = await query(
-        `SELECT q.*, s.name as subject_name, c.name as chapter_name, t.name as topic_name
+        `SELECT q.*, s.name as subject_name, s.exam_type as exam_type, c.name as chapter_name, t.name as topic_name
          FROM questions q
          JOIN topics t ON t.id = q.topic_id
          JOIN chapters c ON c.id = t.chapter_id
