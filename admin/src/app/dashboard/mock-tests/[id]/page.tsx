@@ -120,10 +120,11 @@ export default function MockTestDetailPage() {
   };
 
   const downloadTemplate = () => {
-    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation', 'imageUrl'];
-    const sample = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'Sample Question?', 'Opt A', 'Opt B', 'Opt C', 'Opt D', 'A', 'Sample Solution', 'https://example.com/diagram.png'];
+    const headers = ['subject', 'chapter', 'topic', 'difficulty', 'questionType', 'questionText', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation', 'imageUrl'];
+    const sampleMCQ = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'MCQ', 'What is the trajectory of a projectile?', 'Parabolic', 'Linear', 'Circular', 'Elliptical', 'A', 'Projectile motion has parabolic trajectory', 'https://example.com/diagram.png'];
+    const sampleInt = ['Physics', 'Kinematics', 'Projectile Motion', 'Medium', 'INTEGER', 'A ball is projected at 45 degrees with 10m/s. What is horizontal range in meters? (Take g=10)', '', '', '', '', '10', 'Range = u^2 sin(2*theta)/g = 100 * 1 / 10 = 10m', ''];
     
-    const csv = Papa.unparse([headers, sample]);
+    const csv = Papa.unparse({ fields: headers, data: [sampleMCQ, sampleInt] });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -153,13 +154,14 @@ export default function MockTestDetailPage() {
             difficulty: row.difficulty || 'medium',
             examType: test.exam_type === 'NEET' ? 'NEET' : 'JEE Main',
             body: row.questionText,
-            option_a: row.optionA,
-            option_b: row.optionB,
-            option_c: row.optionC,
-            option_d: row.optionD,
+            option_a: row.optionA || null,
+            option_b: row.optionB || null,
+            option_c: row.optionC || null,
+            option_d: row.optionD || null,
             correct_option: row.correctAnswer,
             explanation_text: row.explanation || '',
             image_url: row.imageUrl || null,
+            q_type: (row.questionType || 'MCQ').trim().toUpperCase(),
           }));
 
           const res = await fetch(`${API_BASE_URL}/mock-tests/admin/templates/${testId}/questions/bulk`, {
@@ -528,8 +530,10 @@ export default function MockTestDetailPage() {
                 <div className="text-xs text-amber-800 dark:text-amber-400">
                   <p className="font-bold mb-1">Instructions:</p>
                   <ul className="list-disc list-inside space-y-1 opacity-90">
-                    <li>The CSV must contain columns: <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">subject</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">chapter</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">topic</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">difficulty</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">questionText</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionA</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionB</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionC</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionD</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">correctAnswer</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">explanation</code>.</li>
-                    <li>Correct Answer must be exactly A, B, C, or D.</li>
+                    <li>The CSV must contain columns: <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">subject</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">chapter</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">topic</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">difficulty</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">questionType</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">questionText</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionA</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionB</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionC</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">optionD</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">correctAnswer</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">explanation</code>.</li>
+                    <li><code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">questionType</code> can be <code className="font-semibold">MCQ</code> or <code className="font-semibold">INTEGER</code>.</li>
+                    <li>For MCQ, Correct Answer must be exactly A, B, C, or D.</li>
+                    <li>For INTEGER, Correct Answer must be a numerical value (e.g. <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">12</code>), and options A-D can be left empty.</li>
                     <li>Exam Type will default to <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">{test?.exam_type}</code> for these questions.</li>
                   </ul>
                 </div>
