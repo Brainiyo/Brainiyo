@@ -282,8 +282,15 @@ export default function LandingPage() {
               </div>
               <p style={{ color: '#94a3b8', marginTop: '20px', maxWidth: '300px' }}>The supreme engineering platform built for NEET & JEE aspirants.</p>
             </div>
-            <div style={{ color: '#94a3b8', fontSize: '14px' }}>
-              &copy; 2026 Brainiyo EdTech Technologies.
+            <div style={{ color: '#94a3b8', fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '4px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <Link href="/privacy" style={{ color: '#cbd5e1', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = '#cbd5e1'}>Privacy Policy</Link>
+                <Link href="/terms" style={{ color: '#cbd5e1', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = '#cbd5e1'}>Terms of Service</Link>
+                <Link href="/refunds" style={{ color: '#cbd5e1', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = '#cbd5e1'}>Refund Policy</Link>
+                <Link href="/disclaimer" style={{ color: '#cbd5e1', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = '#cbd5e1'}>Disclaimer</Link>
+                <Link href="/grievance" style={{ color: '#cbd5e1', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = '#cbd5e1'}>Grievance Redressal</Link>
+              </div>
+              <div>&copy; 2026 Brainiyo EdTech Technologies.</div>
             </div>
           </div>
         </div>

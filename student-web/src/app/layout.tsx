@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { UserProvider } from "@/contexts/UserContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import CookieConsent from "@/components/CookieConsent";
 
 export const metadata: Metadata = {
   title: "Brainiyo Student Portal | Master JEE & NEET",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <ThemeProvider>
           <UserProvider>
             {children}
+            <CookieConsent />
 
             {/* MathJax config — must run before the library loads */}
             <Script id="mathjax-config" strategy="beforeInteractive">
