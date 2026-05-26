@@ -159,3 +159,311 @@
     grid-column: span 1;
   }
 }
+
+/* Insights styling */
+.insightsContainer {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insightItem {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+
+.insightItem.success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+.insightItem.info {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.insightItem.warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.insightItem.danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+}
+
+.insightIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.insightText {
+  flex-grow: 1;
+}
+
+/* Question Review Section */
+.reviewSection {
+  margin-top: 56px;
+}
+
+.reviewTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.filterBar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.activeFilterBtn {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.activeFilterBtn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.questionList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.questionCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.qCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.qIndex {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.qTypeBadge {
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+  text-transform: uppercase;
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badgeCorrect {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.badgeIncorrect {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+
+.badgeUnattempted {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.qCardBody {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* MCQ Options */
+.optionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: var(--card);
+}
+
+.optionLetter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.optSelectedCorrect {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.optSelectedCorrect .optionLetter {
+  background: var(--success);
+  color: white;
+}
+
+.optSelectedIncorrect {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.optSelectedIncorrect .optionLetter {
+  background: var(--danger);
+  color: white;
+}
+
+.optCorrectAnswer {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.optCorrectAnswer .optionLetter {
+  border: 2px solid var(--success);
+  color: var(--success);
+  background: transparent;
+}
+
+/* Numerical Answer Result */
+.integerResult {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.integerRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.integerRow span {
+  font-weight: 600;
+}
+
+/* Accordion toggling */
+.explanationToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: all 0.2s ease;
+}
+
+.explanationToggle:hover {
+  background: var(--primary-soft);
+}
+
+.explanationContent {
+  padding: 16px;
+  background: rgba(248, 250, 252, 0.4);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  margin-top: -4px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.explanationText {
+  color: var(--text);
+}
+
+.explanationImage {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 8px;
+}

@@ -387,6 +387,18 @@ module.exports = {
         await client.query(`UPDATE users SET xp_points = xp_points + $1 WHERE id = $2`, [totalScore, userId]);
       }
 
+      // Fetch all questions of this mock test, along with the student's selected answer and the correct answer
+      const questionsBreakdownRes = await client.query(
+        `SELECT q.id, q.body, q.option_a, q.option_b, q.option_c, q.option_d, q.q_type, q.correct_option, q.explanation_text, q.image_url,
+                mta.selected_option as user_answer, mta.is_correct
+         FROM exam_template_questions etq
+         JOIN questions q ON q.id = etq.question_id
+         LEFT JOIN mock_test_answers mta ON mta.question_id = q.id AND mta.mock_test_id = $1
+         WHERE etq.exam_template_id = $2
+         ORDER BY etq.order_index`,
+        [attemptId, templateId]
+      );
+
       await client.query('COMMIT');
 
       res.json({
@@ -396,7 +408,8 @@ module.exports = {
           score: totalScore,
           correct: correctCount,
           incorrect: incorrectCount,
-          unattempted: correctRes.rows.length - correctCount - incorrectCount
+          unattempted: correctRes.rows.length - correctCount - incorrectCount,
+          questions: questionsBreakdownRes.rows
         }
       });
     } catch (err) {
