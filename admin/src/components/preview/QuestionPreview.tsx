@@ -7,10 +7,12 @@ export interface QuestionData {
   difficulty: string;
   examType: string;
   q_type: 'MCQ' | 'INTEGER';
-  options: { A: string; B: string; C: string; D: string };
+  options: { A?: string; B?: string; C?: string; D?: string };
   correctAnswer: string;
   explanation: string;
   solutionImageUrl: string;
+  questionText: string;
+  questionImageUrl: string;
 }
 
 interface QuestionPreviewProps {
