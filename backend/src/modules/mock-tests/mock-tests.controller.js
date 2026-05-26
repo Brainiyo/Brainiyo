@@ -191,10 +191,11 @@ module.exports = {
       const results = [];
 
       for (const q of questions) {
-        let sRes = await client.query('SELECT id FROM subjects WHERE name = $1', [q.subject]);
+        const targetExam = q.examType === 'NEET' ? 'NEET' : 'JEE';
+        let sRes = await client.query('SELECT id FROM subjects WHERE name = $1 AND exam_type = $2::exam_type', [q.subject, targetExam]);
         let sId = sRes.rows[0]?.id;
         if (!sId) {
-          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2::exam_type) RETURNING id', [q.subject, q.examType === 'NEET' ? 'NEET' : 'JEE']);
+          sRes = await client.query('INSERT INTO subjects (name, exam_type) VALUES ($1, $2::exam_type) RETURNING id', [q.subject, targetExam]);
           sId = sRes.rows[0].id;
         }
 
