@@ -413,10 +413,26 @@ module.exports = {
         }
       });
     } catch (err) {
-      await client.query('ROLLBACK');
+      await client.query('ROLLBACK').catch(() => {});
       next(err);
     } finally {
       client.release();
     }
+  },
+
+  listUpcomingTemplates: async (req, res, next) => {
+    try {
+      const userExam = req.user.target_exam;
+      const { rows } = await query(
+        `SELECT * FROM exam_templates
+         WHERE (exam_type = $1 OR exam_type = 'BOTH')
+           AND is_published = FALSE
+           AND publish_at IS NOT NULL
+           AND publish_at > NOW()
+         ORDER BY publish_at ASC`,
+        [userExam]
+      );
+      res.json({ success: true, data: rows });
+    } catch (err) { next(err); }
   }
 };

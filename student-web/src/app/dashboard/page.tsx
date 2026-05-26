@@ -13,21 +13,30 @@ export default function DashboardOverview() {
   const router = useRouter();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [upcomingTests, setUpcomingTests] = useState<any[]>([]);
+  const [upcomingLoading, setUpcomingLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadDashboardData() {
       try {
-        const res = await api.getDashboard();
-        if (res.success) {
-          setStats(res.data);
+        const [statsRes, upcomingRes] = await Promise.all([
+          api.getDashboard(),
+          api.getUpcomingMockTests()
+        ]);
+        if (statsRes.success) {
+          setStats(statsRes.data);
+        }
+        if (upcomingRes.success) {
+          setUpcomingTests(upcomingRes.data || []);
         }
       } catch (err) {
-        console.error('Failed to load dashboard stats:', err);
+        console.error('Failed to load dashboard data:', err);
       } finally {
         setLoading(false);
+        setUpcomingLoading(false);
       }
     }
-    loadStats();
+    loadDashboardData();
   }, []);
 
   const avgAccuracy = stats && stats.total_attempted > 0
@@ -84,14 +93,38 @@ export default function DashboardOverview() {
       <Card className={styles.recentActivity}>
         <h3>Upcoming Mock Tests</h3>
         <div className={styles.activityList}>
-          <div className={styles.activityItem}>
-            <div className={styles.actIcon}>📝</div>
-            <div className={styles.actInfo}>
-              <p>NEET Full Syllabus Mock 14</p>
-              <span>Scheduled for May 15, 2026</span>
+          {upcomingLoading ? (
+            <div className="py-4 text-center text-slate-500 text-sm">Loading upcoming tests...</div>
+          ) : upcomingTests.length === 0 ? (
+            <div className="py-4 text-center text-slate-400 text-sm italic">
+              No upcoming mock tests scheduled.
             </div>
-            <Button variant="outline" size="sm">Register</Button>
-          </div>
+          ) : (
+            upcomingTests.map((test) => (
+              <div key={test.id} className={styles.activityItem}>
+                <div className={styles.actIcon}>📝</div>
+                <div className={styles.actInfo}>
+                  <p>{test.title}</p>
+                  <span>
+                    Scheduled for {new Date(test.publish_at).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => router.push('/dashboard/tests')}
+                >
+                  View Details
+                </Button>
+              </div>
+            ))
+          )}
         </div>
       </Card>
     </motion.div>

@@ -111,9 +111,12 @@ class ApiClient {
     return this.request('/analytics/public-stats');
   }
 
-  // Mock Tests
   getAvailableMockTests() {
     return this.request('/mock-tests/available');
+  }
+
+  getUpcomingMockTests() {
+    return this.request('/mock-tests/upcoming');
   }
 
   startMockTest(templateId: string) {

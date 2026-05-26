@@ -6,6 +6,7 @@ const { adminMiddleware } = require('../../middleware/admin');
 
 // Student Routes
 router.get('/available', authMiddleware, ctrl.listAvailableTemplates);
+router.get('/upcoming',  authMiddleware, ctrl.listUpcomingTemplates);
 router.post('/start/:templateId', authMiddleware, ctrl.startMockTest);
 router.post('/submit/:attemptId', authMiddleware, ctrl.submitMockTest);
 
