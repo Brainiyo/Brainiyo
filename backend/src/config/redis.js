@@ -61,6 +61,13 @@ const safeRedis = {
     const val = (parseInt(memoryStorage.get(key)) || 0) + 1;
     memoryStorage.set(key, val.toString());
     return val;
+  },
+  keys: async (pattern) => {
+    if (isRedisUp()) {
+      try { return await redis.keys(pattern); } catch { /* fallback */ }
+    }
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    return Array.from(memoryStorage.keys()).filter(key => regex.test(key));
   }
 };
 

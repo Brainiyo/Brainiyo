@@ -4,13 +4,11 @@ const { CACHE } = require('../../config/constants');
 
 const clearCurriculumCache = async () => {
   try {
-    if (redis.status === 'ready') {
-      const keys = await redis.keys('subjects:*');
-      const keys2 = await redis.keys('chapters:*');
-      const allKeys = [...keys, ...keys2];
-      for (const key of allKeys) {
-        await redis.del(key);
-      }
+    const keys = await redis.keys('subjects:*');
+    const keys2 = await redis.keys('chapters:*');
+    const allKeys = [...keys, ...keys2];
+    for (const key of allKeys) {
+      await redis.del(key);
     }
   } catch {
     // Ignore cache clearing errors
