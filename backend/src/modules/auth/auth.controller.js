@@ -2,6 +2,8 @@ const { verifyFirebaseToken } = require('../../config/firebase');
 const { query }               = require('../../config/db');
 const { signToken }           = require('../../utils/jwt');
 const { AppError }            = require('../../middleware/errorHandler');
+const { ALLOWED_ADMIN_EMAILS } = require('../../middleware/admin');
+
 
 /**
  * POST /api/auth/verify-token
@@ -21,14 +23,18 @@ const verifyToken = async (req, res, next) => {
     const { uid, email, name, phone_number } = decoded;
 
     // 2. Upsert user in our DB
+    const isLocalAdmin = email && ALLOWED_ADMIN_EMAILS.includes(email.toLowerCase());
+    const roleValue = isLocalAdmin ? 'admin' : 'student';
+
     const result = await query(
-      `INSERT INTO users (firebase_uid, name, email, phone, target_exam, class, is_verified, is_onboarded)
-       VALUES ($1, $2, $3, $4, 'NEET', 11, TRUE, FALSE)
+      `INSERT INTO users (firebase_uid, name, email, phone, target_exam, class, is_verified, is_onboarded, role)
+       VALUES ($1, $2, $3, $4, 'NEET', 11, TRUE, FALSE, $5)
        ON CONFLICT (firebase_uid) DO UPDATE
          SET email      = COALESCE(EXCLUDED.email, users.email),
+             role       = CASE WHEN COALESCE(EXCLUDED.email, users.email) = ANY($6::text[]) THEN 'admin'::user_role ELSE users.role END,
              last_login = NOW()
-       RETURNING id, firebase_uid, name, email, phone, class, target_exam, is_onboarded, created_at, xp_points`,
-      [uid, name || 'Student', email || null, phone_number || null]
+       RETURNING id, firebase_uid, name, email, phone, class, target_exam, is_onboarded, created_at, xp_points, role`,
+      [uid, name || 'Student', email || null, phone_number || null, roleValue, ALLOWED_ADMIN_EMAILS]
     );
 
     const user = result.rows[0];

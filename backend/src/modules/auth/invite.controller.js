@@ -1,6 +1,7 @@
 const { query } = require('../../config/db');
 const { AppError } = require('../../middleware/errorHandler');
 const { sendAdminInvite } = require('../../utils/email');
+const { ALLOWED_ADMIN_EMAILS } = require('../../middleware/admin');
 
 const inviteController = {
   /**
@@ -11,6 +12,11 @@ const inviteController = {
     try {
       const { email, role = 'admin' } = req.body;
       const invitedBy = req.user.id;
+
+      // Restrict admin invites to only allowed emails
+      if (!ALLOWED_ADMIN_EMAILS.includes(email.toLowerCase())) {
+        return next(new AppError('Only authorized admin emails can be invited', 400));
+      }
 
       // 1. Check if user already exists
       const userCheck = await query(`SELECT id FROM users WHERE email = $1`, [email]);
@@ -92,6 +98,10 @@ const inviteController = {
       const inviteRes = await query(`SELECT * FROM admin_invites WHERE id = $1`, [inviteId]);
       const invite = inviteRes.rows[0];
       if (!invite || invite.status !== 'pending') return next(new AppError('Invalid invite', 400));
+
+      if (!ALLOWED_ADMIN_EMAILS.includes(invite.email.toLowerCase())) {
+        return next(new AppError('Unauthorized admin email', 403));
+      }
 
       // 2. Verify Firebase Token
       const decoded = await verifyFirebaseToken(idToken);

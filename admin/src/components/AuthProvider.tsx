@@ -23,6 +23,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        const allowedEmails = ['brainiyoofficial@gmail.com', 'shreyanshg2005@gmail.com'];
+        if (!currentUser.email || !allowedEmails.includes(currentUser.email.toLowerCase())) {
+          alert('Access denied: You do not have administrator permissions.');
+          await firebaseSignOut(auth);
+          setUser(null);
+          localStorage.removeItem('brainiyo_token');
+          setLoading(false);
+          router.push('/login');
+          return;
+        }
+
         const idToken = await currentUser.getIdToken();
         try {
           const res = await fetch(`${API_BASE_URL}/auth/verify-token`, {
@@ -58,6 +69,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      const email = result.user.email;
+      const allowedEmails = ['brainiyoofficial@gmail.com', 'shreyanshg2005@gmail.com'];
+      if (!email || !allowedEmails.includes(email.toLowerCase())) {
+        alert('Access denied: You do not have administrator permissions.');
+        await firebaseSignOut(auth);
+        throw new Error('Access denied: Unauthorized email');
+      }
       const idToken = await result.user.getIdToken();
       const res = await fetch(`${API_BASE_URL}/auth/verify-token`, {
         method: 'POST',

@@ -13,10 +13,18 @@ async function promoteAdmin() {
       process.exit(0);
     }
 
-    // Promote ALL existing users to admin (for development)
-    // In production, you would target a specific email
+    // Promote only the two allowed admin emails
+    const allowedAdminEmails = ['brainiyoofficial@gmail.com', 'shreyanshg2005@gmail.com'];
+    
+    // First, demote any other admins
+    await query(
+      `UPDATE users SET role = 'student' WHERE email NOT IN ($1, $2) AND role = 'admin'`,
+      allowedAdminEmails
+    );
+
     const result = await query(
-      `UPDATE users SET role = 'admin' WHERE role = 'student' RETURNING id, email, name, role`
+      `UPDATE users SET role = 'admin' WHERE email IN ($1, $2) RETURNING id, email, name, role`,
+      allowedAdminEmails
     );
 
     if (result.rows.length > 0) {
