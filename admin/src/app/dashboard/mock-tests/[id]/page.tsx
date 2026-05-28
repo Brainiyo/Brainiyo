@@ -90,6 +90,22 @@ export default function MockTestDetailPage() {
     }
   };
 
+  const handleRemoveAll = async () => {
+    if (!confirm('Are you sure you want to remove ALL questions from this test? This cannot be undone.')) return;
+    try {
+      const token = localStorage.getItem('brainiyo_token');
+      const res = await fetch(`${API_BASE_URL}/mock-tests/admin/templates/${testId}/questions`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to remove questions');
+      toast.success('All questions removed');
+      fetchDetails();
+    } catch (error) {
+      toast.error('Failed to remove questions');
+    }
+  };
+
   const handleAddSelected = async () => {
     if (selectedInPicker.length === 0) return;
     const savingToast = toast.loading('Adding questions...');
@@ -266,8 +282,13 @@ export default function MockTestDetailPage() {
 
       {/* Questions List */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <h2 className="text-lg font-bold">Current Questions</h2>
+          {test.questions?.length > 0 && (
+            <Button onClick={handleRemoveAll} variant="destructive" size="sm" className="gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border-red-200">
+              <Trash2 size={16} /> Delete All
+            </Button>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">

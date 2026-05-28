@@ -18,6 +18,7 @@ router.get('/admin/templates/:id', ctrl.getTemplateDetails);
 router.post('/admin/templates/:id/questions', ctrl.addQuestionsToTemplate);
 router.post('/admin/templates/:id/questions/bulk', ctrl.bulkCreateQuestionsForTemplate);
 router.delete('/admin/templates/:id/questions/:questionId', ctrl.removeQuestionFromTemplate);
+router.delete('/admin/templates/:id/questions', ctrl.removeAllQuestionsFromTemplate);
 router.patch('/admin/templates/:id/publish', ctrl.publishTemplate);
 router.patch('/admin/templates/:id/unpublish', ctrl.unpublishTemplate);
 router.patch('/admin/templates/:id/schedule', ctrl.updateTemplateSchedule);

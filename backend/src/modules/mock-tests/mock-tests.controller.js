@@ -171,6 +171,23 @@ module.exports = {
     } catch (err) { next(err); }
   },
 
+  removeAllQuestionsFromTemplate: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await query(`DELETE FROM exam_template_questions WHERE exam_template_id = $1`, [id]);
+      
+      // Update total_questions count and max_marks in template
+      await query(`
+        UPDATE exam_templates 
+        SET total_questions = 0,
+            max_marks = 0
+        WHERE id = $1
+      `, [id]);
+
+      res.json({ success: true, message: 'All questions removed' });
+    } catch (err) { next(err); }
+  },
+
   bulkCreateQuestionsForTemplate: async (req, res, next) => {
     const client = await getClient();
     try {
