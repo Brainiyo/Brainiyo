@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon, Menu } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from '../Home.module.css';
 
 
@@ -18,7 +19,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  if (isAuthenticated === null) return <div className={styles.splash}>B</div>;
+  if (isAuthenticated === null) {
+    return (
+      <div className={styles.splash}>
+        <motion.div
+          animate={{ scale: [0.95, 1.05, 0.95] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}
+        >
+          <Image
+            src="/logo-icon.png"
+            alt="Brainiyo Logo"
+            width={100}
+            height={100}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '3px', fontFamily: 'var(--font-outfit), sans-serif' }}>
+            BRAINIYO
+          </h2>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -29,7 +52,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           className={styles.loginCard}
         >
           <div className={styles.loginHeader}>
-            <div className={styles.bigLogo}>B</div>
+            <div className={styles.bigLogo}>
+              <Image
+                src="/logo-icon.png"
+                alt="Brainiyo Logo"
+                width={80}
+                height={80}
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </div>
             <h1>Master Your Future</h1>
             <p>Step into the Brainiyo Arena and conquer your JEE/NEET goals.</p>
           </div>
