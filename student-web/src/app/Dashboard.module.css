@@ -683,24 +683,153 @@
   100% { background-position: -200% 0; }
 }
 
-/* ── Responsive ── */
+/* ─────────────────────────────────────────
+   RESPONSIVE — Tablet → Phone
+───────────────────────────────────────── */
+
+/* Tablet (≤ 1100px) */
 @media (max-width: 1100px) {
-  .statsRow       { grid-template-columns: repeat(2, 1fr); }
-  .quickActions   { grid-template-columns: repeat(2, 1fr); }
+  .statsRow     { grid-template-columns: repeat(2, 1fr); }
+  .quickActions { grid-template-columns: repeat(2, 1fr); }
+  .mainGrid     { grid-template-columns: 1fr; }
 }
 
+/* Large phone / small tablet (≤ 768px) */
 @media (max-width: 768px) {
-  .page           { gap: 18px; }
-  .banner         { flex-direction: column; align-items: flex-start; }
-  .bannerRight    { width: 100%; }
-  .statsRow       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .quickActions   { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .mainGrid       { grid-template-columns: 1fr; }
-  .statValue      { font-size: 22px; }
-  .bannerGreeting { font-size: 18px; }
+  .page {
+    gap: 16px;
+    padding-bottom: 32px;
+  }
+
+  /* Banner: vertical stack */
+  .banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 20px;
+    gap: 16px;
+    border-radius: 18px;
+  }
+
+  .bannerGreeting { font-size: 17px; }
+  .bannerSub      { font-size: 12px; }
+
+  /* Badges row: horizontal scroll */
+  .bannerRight {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 10px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .bannerRight::-webkit-scrollbar { display: none; }
+
+  .bannerBadge {
+    min-width: 80px;
+    flex-shrink: 0;
+    padding: 8px 12px;
+  }
+  .bannerBadgeVal { font-size: 15px; }
+  .bannerBadgeLbl { font-size: 10px; }
+
+  /* Stats: 2 col, compact */
+  .statsRow { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .statCard { padding: 14px 16px; gap: 12px; border-radius: 16px; }
+  .statIconWrap { width: 40px; height: 40px; border-radius: 12px; font-size: 18px; }
+  .statValue    { font-size: 20px; }
+  .statLabel    { font-size: 11px; }
+
+  /* Quick Actions: 2 col */
+  .quickActions { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .quickActionBtn {
+    padding: 14px 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+  .quickActionIcon  { width: 36px; height: 36px; font-size: 18px; }
+  .quickActionTitle { font-size: 13px; }
+  .quickActionSub   { font-size: 11px; }
+
+  /* Section cards */
+  .mainGrid   { grid-template-columns: 1fr; gap: 14px; }
+  .sectionCard { padding: 18px 16px; gap: 14px; border-radius: 18px; }
+  .sectionTitle { font-size: 14px; }
+
+  /* Weak chapters */
+  .weakChapter { padding: 12px 14px; }
+  .weakName    { font-size: 13px; }
+
+  /* Mock test cards */
+  .mockTestCard { padding: 12px 14px; }
+  .mockTestName { font-size: 13px; }
+  .mockStartBtn { padding: 7px 12px; font-size: 11px; }
+
+  /* Leaderboard */
+  .leaderboardRow { padding: 10px 12px; }
+  .leaderboardName { font-size: 13px; }
+  .leaderboardXp   { font-size: 12px; }
+
+  /* Progress */
+  .progressTrack { height: 8px; }
+
+  /* Revision banner */
+  .revisionBanner { padding: 14px 16px; }
+  .revisionTitle  { font-size: 14px; }
+  .revisionBtn    { padding: 8px 14px; font-size: 12px; }
 }
 
+/* Small phone (≤ 480px) */
 @media (max-width: 480px) {
-  .statsRow    { grid-template-columns: 1fr 1fr; }
+  .page { gap: 12px; }
+
+  .banner {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 12px;
+  }
+  .bannerGreeting { font-size: 15px; }
+
+  /* Stats: still 2 col but smaller */
+  .statsRow { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .statCard { padding: 12px; gap: 10px; border-radius: 14px; }
+  .statIconWrap { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+  .statValue    { font-size: 18px; }
+
+  /* Quick actions: 2 col, single-line labels */
+  .quickActions { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quickActionBtn {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .quickActionSub { display: none; }
+
+  /* Section cards: minimal padding */
+  .sectionCard { padding: 14px 12px; gap: 12px; border-radius: 16px; }
+  .sectionTitle { font-size: 13px; }
+  .sectionLink  { font-size: 12px; }
+
+  /* Leaderboard rank emoji can shrink */
+  .leaderboardAvatar { width: 30px; height: 30px; font-size: 12px; border-radius: 8px; }
+  .leaderboardRank   { width: 24px; font-size: 13px; }
+
+  /* Revision btn full-width on very small screens */
+  .revisionBanner { flex-direction: column; align-items: flex-start; }
+  .revisionBtn    { width: 100%; text-align: center; padding: 10px; }
+
+  /* Skeleton */
+  .skeleton { border-radius: 10px; }
+}
+
+/* Extra small (≤ 360px — older Androids) */
+@media (max-width: 360px) {
+  .statsRow     { grid-template-columns: 1fr 1fr; }
   .quickActions { grid-template-columns: 1fr 1fr; }
+  .statValue    { font-size: 16px; }
+  .bannerGreeting { font-size: 14px; }
+  .bannerBadge  { min-width: 68px; padding: 6px 10px; }
+  .sectionCard  { padding: 12px 10px; }
 }

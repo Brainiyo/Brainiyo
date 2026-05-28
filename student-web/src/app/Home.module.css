@@ -7,6 +7,7 @@
   flex: 1;
   margin-left: var(--sidebar-width);
   padding: 0 40px 40px;
+  min-width: 0;
 }
 
 .header {
@@ -428,5 +429,75 @@
   .loginCard {
     padding: 24px;
     margin: 16px;
+  }
+
+  .header {
+    /* Let header items wrap if needed */
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .headerLeft {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .headerLeft h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .headerRight {
+    flex-shrink: 0;
+    min-width: 0;
+  }
+}
+
+/* iPhone safe-area support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .main {
+      padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+    }
+  }
+}
+
+/* Extra small (≤ 480px) */
+@media (max-width: 480px) {
+  .main {
+    padding: 0 12px 20px !important;
+  }
+
+  .header {
+    height: 60px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+  }
+
+  .headerLeft h2 {
+    font-size: 17px;
+  }
+
+  .xpBadge {
+    display: none; /* Hide XP on very small phones to prevent overflow */
+  }
+
+  .streakBadge {
+    padding: 5px 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .menuToggle {
+    padding: 6px;
+    margin-right: 6px;
   }
 }
