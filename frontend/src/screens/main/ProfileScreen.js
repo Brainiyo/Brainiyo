@@ -6,7 +6,8 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Alert,
-  Switch 
+  Switch,
+  TextInput
 } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -29,6 +30,17 @@ export default function ProfileScreen({ navigation }) {
 
   // Local interaction trigger state tracking
   const [streakFreezeCount, setStreakFreezeCount] = useState(1); // Standard baseline alloc
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(user?.name || '');
+
+  const saveName = () => {
+    if (!tempName.trim()) {
+      Alert.alert('Invalid Name', 'Name cannot be empty.');
+      return;
+    }
+    syncProfile({ name: tempName.trim() });
+    setIsEditingName(false);
+  };
 
   const confirmSignOut = () => {
     Alert.alert(
@@ -117,7 +129,40 @@ export default function ProfileScreen({ navigation }) {
               </Text>
             </View>
 
-            <Text style={styles.userName}>{user?.name || 'Dedicated Student'}</Text>
+            {isEditingName ? (
+              <View style={styles.editNameRow}>
+                <TextInput
+                  style={styles.nameInput}
+                  value={tempName}
+                  onChangeText={setTempName}
+                  autoFocus
+                  maxLength={50}
+                  placeholder="Enter your name"
+                  placeholderTextColor={COLORS.neutral400}
+                />
+                <View style={styles.editNameButtons}>
+                  <TouchableOpacity style={styles.saveNameBtn} onPress={saveName}>
+                    <Text style={styles.saveBtnText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.cancelNameBtn} onPress={() => setIsEditingName(false)}>
+                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity 
+                style={styles.nameRow}
+                onPress={() => {
+                  setTempName(user?.name || '');
+                  setIsEditingName(true);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.userName}>{user?.name || 'Dedicated Student'}</Text>
+                <Text style={styles.editIcon}>✏️</Text>
+              </TouchableOpacity>
+            )}
+
             <Text style={styles.phoneText}>{user?.phone || '+91 ••••• •••••'}</Text>
 
             <View style={styles.chipsMatrix}>
@@ -415,5 +460,58 @@ const styles = StyleSheet.create({
   versionString: {
     fontSize: TYPOGRAPHY.size.xs,
     color: COLORS.textMuted,
+  },
+  editNameRow: {
+    alignItems: 'center',
+    width: '80%',
+    gap: SPACING[2],
+    marginVertical: SPACING[2],
+  },
+  nameInput: {
+    width: '100%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: COLORS.neutral300,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING[3],
+    fontSize: TYPOGRAPHY.size.base,
+    color: COLORS.text,
+    textAlign: 'center',
+    backgroundColor: COLORS.neutral50,
+  },
+  editNameButtons: {
+    flexDirection: 'row',
+    gap: SPACING[3],
+  },
+  saveNameBtn: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING[4],
+    paddingVertical: SPACING[1.5],
+    borderRadius: RADIUS.sm,
+  },
+  saveBtnText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+  },
+  cancelNameBtn: {
+    backgroundColor: COLORS.neutral200,
+    paddingHorizontal: SPACING[4],
+    paddingVertical: SPACING[1.5],
+    borderRadius: RADIUS.sm,
+  },
+  cancelBtnText: {
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.medium,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING[2],
+  },
+  editIcon: {
+    fontSize: 14,
+    opacity: 0.6,
   },
 });
