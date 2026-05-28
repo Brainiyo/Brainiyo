@@ -119,28 +119,28 @@ export default function DashboardOverview() {
       {/* ── 2. Stats Row ── */}
       <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className={styles.statsRow}>
         <div className={styles.statCard}>
-          <div className={`${styles.statIconWrap} ${styles.blue}`}>🎯</div>
+          <div className={`${styles.statIconWrap} ${styles.statBlue}`}>🎯</div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{loading ? '—' : `${avgAccuracy}%`}</span>
             <span className={styles.statLabel}>Avg Accuracy</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={`${styles.statIconWrap} ${styles.amber}`}>⚡</div>
+          <div className={`${styles.statIconWrap} ${styles.statAmber}`}>⚡</div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{loading ? '—' : totalSolved}</span>
             <span className={styles.statLabel}>Total Solved</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={`${styles.statIconWrap} ${styles.green}`}>📅</div>
+          <div className={`${styles.statIconWrap} ${styles.statGreen}`}>📅</div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{loading ? '—' : todayDone}</span>
             <span className={styles.statLabel}>Done Today</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={`${styles.statIconWrap} ${styles.purple}`}>📚</div>
+          <div className={`${styles.statIconWrap} ${styles.statPurple}`}>📚</div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{loading ? '—' : dueRevision}</span>
             <span className={styles.statLabel}>Due for Revision</span>

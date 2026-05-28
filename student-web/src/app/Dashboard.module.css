@@ -122,10 +122,10 @@
   flex-shrink: 0;
 }
 
-.statIconWrap.blue   { background: rgba(99,102,241,0.12); }
-.statIconWrap.amber  { background: rgba(245,158,11,0.12); }
-.statIconWrap.green  { background: rgba(16,185,129,0.12); }
-.statIconWrap.purple { background: rgba(168,85,247,0.12); }
+.statBlue   { background: rgba(99,102,241,0.12); }
+.statAmber  { background: rgba(245,158,11,0.12); }
+.statGreen  { background: rgba(16,185,129,0.12); }
+.statPurple { background: rgba(168,85,247,0.12); }
 
 .statInfo {
   display: flex;
