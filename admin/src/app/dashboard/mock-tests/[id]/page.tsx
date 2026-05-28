@@ -285,7 +285,7 @@ export default function MockTestDetailPage() {
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <h2 className="text-lg font-bold">Current Questions</h2>
           {test.questions?.length > 0 && (
-            <Button onClick={handleRemoveAll} variant="destructive" size="sm" className="gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border-red-200">
+            <Button onClick={handleRemoveAll} variant="danger" size="sm" className="gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border-red-200">
               <Trash2 size={16} /> Delete All
             </Button>
           )}
